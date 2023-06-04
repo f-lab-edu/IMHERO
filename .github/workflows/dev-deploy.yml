@@ -36,8 +36,18 @@ jobs:
         env:
           NAME: imhero
           REPO: imhero
-          IMAGE: imhero-dev
+          IMAGE: imhero
         run: |
           docker build -f ./dockerfile -t $IMAGE .
           docker tag $IMAGE:latest $NAME/$REPO:latest
           docker push $NAME/$REPO:latest
+
+      # ssh 접속 및 shell 실행
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.NCP_DEV_HOST }}
+          username: ${{ secrets.NCP_DEV_USERNAME }}
+          password: ${{ secrets.NCP_DEV_PASSWORD }}
+          script: |
+            ./imhero.sh
