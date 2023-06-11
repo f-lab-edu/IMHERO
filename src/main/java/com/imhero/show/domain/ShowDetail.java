@@ -43,10 +43,7 @@ public class ShowDetail extends BaseEntity {
         this.delYn = delYn;
     }
 
-    public ShowDetail modify(Show show, Integer sequence, LocalDateTime showFromDt, LocalDateTime showToDt, LocalDateTime reservationFromDt, LocalDateTime reservationToDt, String delYn) {
-        if (!ObjectUtils.isEmpty(show)) {
-            this.show = show;
-        }
+    public ShowDetail modify(Integer sequence, LocalDateTime showFromDt, LocalDateTime showToDt, LocalDateTime reservationFromDt, LocalDateTime reservationToDt, String delYn) {
         if (!ObjectUtils.isEmpty(sequence)) {
             this.sequence = sequence;
         }

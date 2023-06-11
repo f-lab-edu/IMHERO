@@ -81,12 +81,12 @@ class ShowDetailRepositoryTest extends Specification {
 
         when:
         ShowDetail savedShowDetail = showDetailRepository.save(showDetail)
-        savedShowDetail.modify(modifyShow, 2, modifiedTime, modifiedTime, modifiedTime, modifiedTime, "Y")
+        savedShowDetail.modify(2, modifiedTime, modifiedTime, modifiedTime, modifiedTime, "Y")
         em.flush()
         ShowDetail findShowDetail = showDetailRepository.findById(showDetail.getId()).get()
 
         then:
-        findShowDetail.getShow() == modifyShow
+        findShowDetail.getShow() == savedShowDetail.getShow()
         findShowDetail.getSequence() == 2
         findShowDetail.getShowFromDt() == modifiedTime
         findShowDetail.getShowToDt() == modifiedTime
@@ -101,7 +101,7 @@ class ShowDetailRepositoryTest extends Specification {
 
         when:
         ShowDetail savedShowDetail = showDetailRepository.save(showDetail)
-        savedShowDetail.modify(null, null, null, null, null, null, null)
+        savedShowDetail.modify(null, null, null, null, null, null)
         em.flush()
         ShowDetail findShowDetail = showDetailRepository.findById(showDetail.getId()).get()
 
