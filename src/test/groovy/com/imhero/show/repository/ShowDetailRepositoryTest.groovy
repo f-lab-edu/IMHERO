@@ -26,17 +26,14 @@ class ShowDetailRepositoryTest extends Specification {
     private EntityManager em;
 
     Show show
-    Show modifyShow
     LocalDateTime now = LocalDateTime.now()
 
     def setup() {
         User user = User.of("email", "password", "username", "N")
         show = Show.of("title", "artist", "place", user, now, now, "N")
-        modifyShow = Show.of("modifiedTitle", "artist", "place", user, now, now, "Y")
 
         userRepository.save(user)
         showRepository.save(show)
-        showRepository.save(modifyShow)
     }
 
     def "회차별 공연 단건 조회"() {
