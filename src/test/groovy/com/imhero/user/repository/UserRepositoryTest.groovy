@@ -89,4 +89,19 @@ class UserRepositoryTest extends Specification {
         then:
         findUser.getDelYn() == "Y"
     }
+
+    def "회원이 이미 탈퇴된 경우" () {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "Y")
+        User savedUser = userRepository.save(user)
+
+        when:
+        boolean result = savedUser.withdraw()
+        em.flush()
+        User findUser = userRepository.findById(savedUser.getId()).get()
+
+        then:
+        !result
+        findUser.getDelYn() == "Y"
+    }
 }
