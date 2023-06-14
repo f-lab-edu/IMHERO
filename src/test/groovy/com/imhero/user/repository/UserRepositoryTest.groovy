@@ -104,4 +104,61 @@ class UserRepositoryTest extends Specification {
         !result
         findUser.getDelYn() == "Y"
     }
+
+    def "회원을 email로 찾는 경우" () {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "Y")
+        User savedUser = userRepository.save(user)
+
+        when:
+        User findUser = userRepository.findUserByEmail("test@gmail.com").get()
+
+        then:
+        findUser.getUsername() == savedUser.getUsername()
+        findUser.getEmail() == savedUser.getEmail()
+        findUser.getPassword() == savedUser.getPassword()
+        findUser.getUsername() == savedUser.getUsername()
+        findUser.getRole() == savedUser.getRole()
+    }
+
+    def "회원을 email 로 찾을 때 없는 경우" () {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "Y")
+        userRepository.save(user)
+
+        when:
+        userRepository.findUserByEmail("None").get()
+
+        then:
+        NoSuchElementException e = thrown()
+    }
+
+    def "회원이 username 으로 찾는 경우" () {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "Y")
+        User savedUser = userRepository.save(user)
+
+        when:
+        User findUser = userRepository.findUserByUsername("test").get()
+
+        then:
+        findUser.getUsername() == savedUser.getUsername()
+
+        findUser.getEmail() == savedUser.getEmail()
+        findUser.getPassword() == savedUser.getPassword()
+        findUser.getUsername() == savedUser.getUsername()
+        findUser.getRole() == savedUser.getRole()
+    }
+
+    def "회원을 usernaem 으로 찾을 때 없는 경우" () {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "Y")
+        userRepository.save(user)
+
+        when:
+        userRepository.findUserByUsername("None").get()
+
+        then:
+        NoSuchElementException e = thrown()
+    }
 }
