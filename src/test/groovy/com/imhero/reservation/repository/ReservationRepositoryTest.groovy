@@ -3,7 +3,9 @@ package com.imhero.reservation.repository
 import com.imhero.reservation.domain.Reservation
 import com.imhero.show.domain.Grade
 import com.imhero.show.domain.Seat
+import com.imhero.show.repository.SeatRepository
 import com.imhero.user.domain.User
+import com.imhero.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
@@ -25,7 +27,7 @@ class ReservationRepositoryTest extends Specification {
 
     def setup() {
         user = userRepository.save(User.of("test@gmail.com", "password", "test", "N"))
-        seat = seatRepository.save(Seat.of(null, Grade.A, 30, 0))
+        seat = seatRepository.save(Seat.of(null, Grade.A, 30))
     }
 
     def "예약 생성"() {
