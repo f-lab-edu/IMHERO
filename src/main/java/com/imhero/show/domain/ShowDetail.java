@@ -4,6 +4,8 @@ import com.imhero.config.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -27,7 +29,7 @@ public class ShowDetail extends BaseEntity {
     private LocalDateTime reservationToDt;
     private String delYn;
 
-    private static ShowDetail of(Show show, Integer sequence, LocalDateTime showFromDt, LocalDateTime showToDt, LocalDateTime reservationFromDt, LocalDateTime reservationToDt, String delYn) {
+    public static ShowDetail of(Show show, Integer sequence, LocalDateTime showFromDt, LocalDateTime showToDt, LocalDateTime reservationFromDt, LocalDateTime reservationToDt, String delYn) {
         return new ShowDetail(show, sequence, showFromDt, showToDt, reservationFromDt, reservationToDt, delYn);
     }
 
@@ -39,5 +41,36 @@ public class ShowDetail extends BaseEntity {
         this.reservationFromDt = reservationFromDt;
         this.reservationToDt = reservationToDt;
         this.delYn = delYn;
+    }
+
+    public ShowDetail modify(Integer sequence, LocalDateTime showFromDt, LocalDateTime showToDt, LocalDateTime reservationFromDt, LocalDateTime reservationToDt, String delYn) {
+        if (!ObjectUtils.isEmpty(sequence)) {
+            this.sequence = sequence;
+        }
+        if (!ObjectUtils.isEmpty(showFromDt)) {
+            this.showFromDt = showFromDt;
+        }
+        if (!ObjectUtils.isEmpty(showToDt)) {
+            this.showToDt = showToDt;
+        }
+        if (!ObjectUtils.isEmpty(reservationFromDt)) {
+            this.reservationFromDt = reservationFromDt;
+        }
+        if (!ObjectUtils.isEmpty(reservationToDt)) {
+            this.reservationToDt = reservationToDt;
+        }
+        if (StringUtils.hasText(delYn)) {
+            this.delYn = delYn;
+        }
+        return this;
+    }
+
+    public boolean cancel() {
+        if (this.delYn.equals("Y")) {
+            return false;
+        }
+
+        this.delYn = "Y";
+        return true;
     }
 }
