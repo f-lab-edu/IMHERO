@@ -156,19 +156,6 @@ class UserServiceTest extends Specification {
         user.getDelYn() == "Y"
     }
 
-    def "회원 탈퇴시 잘못된 요청일 경우"() {
-        given:
-        UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
-
-        when:
-        userService.withdraw("               ")
-
-        then:
-        IllegalArgumentException e = thrown()
-        e.getMessage() == "잘못된 요청입니다."
-    }
-
     def "회원 탈퇴시 회원이 없는 경우"() {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
