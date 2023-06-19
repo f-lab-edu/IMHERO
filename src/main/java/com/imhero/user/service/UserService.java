@@ -19,9 +19,6 @@ public class UserService {
     // TODO : password encoder setting
     // TODO : session setting
     public UserDto save(UserRequest userRequest) {
-        if (!userRequest.getPassword().equals(userRequest.getPasswordCheck())) {
-            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 같지 않습니다.");
-        }
         // TODO : Unique Constraint
         userRepository.findUserByEmail(userRequest.getEmail()).ifPresent(it -> {
             throw new IllegalArgumentException("이미 가입된 회원입니다.");
@@ -42,10 +39,6 @@ public class UserService {
     }
 
     public UserDto update(UserRequest userRequest) {
-        if (!userRequest.getPassword().equals(userRequest.getPasswordCheck())) {
-            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 같지 않습니다.");
-        }
-
         return UserDto
                 .from(getUserByEmailOrElseThrow(userRequest.getEmail())
                         .modify(userRequest.getEmail(),
