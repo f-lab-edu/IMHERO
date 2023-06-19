@@ -48,10 +48,6 @@ public class UserService {
     }
 
     public boolean withdraw(String email) {
-        if (StringUtils.trimAllWhitespace(email).length() == 0) {
-            throw new IllegalArgumentException("잘못된 요청입니다.");
-        }
-
         User user = getUserByEmailOrElseThrow(email);
         return user.withdraw();
     }
