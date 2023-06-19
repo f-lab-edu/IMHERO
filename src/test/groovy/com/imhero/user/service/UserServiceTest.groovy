@@ -28,7 +28,7 @@ class UserServiceTest extends Specification {
         UserRepository userRepository = Mock(UserRepository.class)
         UserService userService = new UserService(userRepository)
         User user = User.of(email, password, username, "N")
-        UserRequest userRequest = new UserRequest(email, password, passwordCheck, username)
+        UserRequest userRequest = new UserRequest(email, password,  username)
 
         when:
         UserDto userResult = userService.save(userRequest)
@@ -38,38 +38,23 @@ class UserServiceTest extends Specification {
         userRepository.findUserByEmail(_) >> Optional.empty()
         userResult.getEmail() == email
         userResult.getPassword() == password
-        userResult.getPassword() == passwordCheck
         userResult.getUsername() == username
         userResult.getRole() == Role.USER
         userResult.getDelYn() == "N"
-    }
-
-    def "회원 가입시 비밀번호와 비밀번호 확인이 같지 않은 경우" () {
-        given:
-        UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
-        UserRequest userRequest = new UserRequest(email, password, "NOT EQUAL", username)
-
-        when:
-        userService.save(userRequest)
-
-        then:
-        IllegalArgumentException e = thrown()
-        e.getMessage() == "비밀번호와 비밀번호 확인이 같지 않습니다."
     }
 
     def "회원 가입시 이미 가입된 회원인 경우" () {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
         UserService userService = new UserService(userRepository)
-        UserRequest userRequest = new UserRequest(email, password, passwordCheck, username)
+        UserRequest userRequest = new UserRequest(email, password, username)
         User user = User.of(email, password, username, "N")
 
         when:
         userService.save(userRequest)
 
         then:
-        userRepository.findUserByUsername(_) >> Optional.of(user)
+        userRepository.findUserByEmail(_) >> Optional.of(user)
         IllegalArgumentException e = thrown()
         e.getMessage() == "이미 가입된 회원입니다."
     }
@@ -112,7 +97,7 @@ class UserServiceTest extends Specification {
         UserRepository userRepository = Mock(UserRepository.class)
         UserService userService = new UserService(userRepository)
         User user = User.of(email, password, username, "N")
-        UserRequest userRequest = new UserRequest(email, password, passwordCheck, username)
+        UserRequest userRequest = new UserRequest(email, password, username)
 
         when:
         UserDto userResult = userService.update(userRequest)
@@ -121,31 +106,16 @@ class UserServiceTest extends Specification {
         userRepository.findUserByEmail(_) >> Optional.of(user)
         userResult.getEmail() == email
         userResult.getPassword() == password
-        userResult.getPassword() == passwordCheck
         userResult.getUsername() == username
         userResult.getRole() == Role.USER
         userResult.getDelYn() == "N"
     }
 
-    def "회원 수정시 비밀번호와 확인이 같지 않은 경우" () {
+    def "회원 수정시 회원이 없는 경우" () {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
         UserService userService = new UserService(userRepository)
-        UserRequest userRequest = new UserRequest(email, password, "NOT EQUAL", username)
-
-        when:
-        userService.update(userRequest)
-
-        then:
-        IllegalArgumentException e = thrown()
-        e.getMessage() == "비밀번호와 비밀번호 확인이 같지 않습니다."
-    }
-
-    def "회원 수정시 회원가 없는 경우" () {
-        given:
-        UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
-        UserRequest userRequest = new UserRequest(email, password, passwordCheck, username)
+        UserRequest userRequest = new UserRequest(email, password, username)
 
         when:
         userService.update(userRequest)
