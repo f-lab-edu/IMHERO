@@ -5,16 +5,18 @@ DROP TABLE IF EXISTS seat;
 DROP TABLE IF EXISTS reservation;
 
 create table users (
-    id bigint not null auto_increment,
-    created_at datetime(6),
-    modified_at datetime(6),
-    del_yn varchar(255),
-    email varchar(255),
-    password varchar(255),
-    role varchar(255),
-    username varchar(255),
-    primary key (id),
-    unique key uk_email (email)
+	id bigint not null auto_increment,
+	del_yn varchar(1),
+	email varchar(50),
+	password varchar(255),
+	role varchar(20),
+	username varchar(50),
+	created_at datetime(6),
+	created_by bigint,
+	modified_at datetime(6),
+	modified_by bigint,
+	primary key (id),
+	unique key (email)
 )
 ;
 
