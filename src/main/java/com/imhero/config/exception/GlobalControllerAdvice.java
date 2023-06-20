@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
-    @ExceptionHandler(ImHeroApplicationException.class)
-    public ResponseEntity<?> applicationHandler(ImHeroApplicationException e) {
+    @ExceptionHandler(ImheroApplicationException.class)
+    public ResponseEntity<?> applicationHandler(ImheroApplicationException e) {
         return ResponseEntity.status(e.getErrorCode().getStatus())
                 .body(Response.error(e.getErrorCode().name()));
     }
