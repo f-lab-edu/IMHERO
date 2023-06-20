@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ImheroApplicationException extends RuntimeException{
+public class ImHeroApplicationException extends RuntimeException {
     private ErrorCode errorCode;
     private String message;
 
-    public ImheroApplicationException(ErrorCode errorCode) {
+    public ImHeroApplicationException(ErrorCode errorCode) {
         this.errorCode = errorCode;
         this.message = null;
     }
