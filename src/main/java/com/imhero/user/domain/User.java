@@ -19,6 +19,7 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String email;
     private String password;
     private String username;
@@ -39,7 +40,7 @@ public class User extends BaseEntity {
     }
 
     public User modify(String email, String password, String username, Role role) {
-        if (StringUtils.hasText(email)){
+        if (StringUtils.hasText(email)) {
             this.email = email;
         }
         if (StringUtils.hasText(password)) {

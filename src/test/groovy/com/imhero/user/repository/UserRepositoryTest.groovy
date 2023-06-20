@@ -4,6 +4,7 @@ import com.imhero.user.domain.Role
 import com.imhero.user.domain.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
@@ -26,6 +27,19 @@ class UserRepositoryTest extends Specification {
 
         then:
         user == savedUser
+    }
+
+    def "회원 이메일 중복"() {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "N")
+        User user2 = User.of("test@gmail.com", "12345678", "test", "N")
+
+        when:
+        userRepository.save(user)
+        userRepository.save(user2)
+
+        then:
+        DataIntegrityViolationException e = thrown()
     }
 
     def "회원 조회" () {
