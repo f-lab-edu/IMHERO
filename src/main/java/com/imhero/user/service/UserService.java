@@ -6,6 +6,7 @@ import com.imhero.user.dto.UserDto;
 import com.imhero.user.dto.request.UserRequest;
 import com.imhero.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -16,21 +17,20 @@ import org.springframework.util.StringUtils;
 public class UserService {
     private final UserRepository userRepository;
 
-    // TODO : password encoder setting
-    // TODO : session setting
     public UserDto save(UserRequest userRequest) {
-        // TODO : Unique Constraint
-        userRepository.findUserByEmail(userRequest.getEmail()).ifPresent(it -> {
+        User user;
+        try {
+            user = userRepository.save(User.of(
+                    userRequest.getEmail(),
+                    userRequest.getPassword(),
+                    userRequest.getUsername(),
+                    "N"));
+        } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("이미 가입된 회원입니다.");
-        });
-
-        return UserDto.from(
-                userRepository.save(User.of(
-                        userRequest.getEmail(),
-                        userRequest.getPassword(),
-                        userRequest.getUsername(),
-                        "N"
-                )));
+        } catch (Exception e) {
+            throw new IllegalArgumentException("올바르지 않은 요청입니다.");
+        }
+        return UserDto.from(user);
     }
 
     @Transactional(readOnly = true)

@@ -5,10 +5,14 @@ import com.imhero.user.domain.User
 import com.imhero.user.dto.UserDto
 import com.imhero.user.dto.request.UserRequest
 import com.imhero.user.repository.UserRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Shared
 import spock.lang.Specification
+
+import javax.persistence.EntityManager
 
 @Transactional
 @SpringBootTest
@@ -48,13 +52,12 @@ class UserServiceTest extends Specification {
         UserRepository userRepository = Mock(UserRepository.class)
         UserService userService = new UserService(userRepository)
         UserRequest userRequest = new UserRequest(email, password, username)
-        User user = User.of(email, password, username, "N")
 
         when:
+        userRepository.save(_) >> { throw new DataIntegrityViolationException("Unique constraint violation") }
         userService.save(userRequest)
 
         then:
-        userRepository.findUserByEmail(_) >> Optional.of(user)
         IllegalArgumentException e = thrown()
         e.getMessage() == "이미 가입된 회원입니다."
     }
