@@ -4,6 +4,7 @@ import com.imhero.user.domain.Role
 import com.imhero.user.domain.User
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
@@ -26,6 +27,19 @@ class UserRepositoryTest extends Specification {
 
         then:
         user == savedUser
+    }
+
+    def "회원 이메일 중복"() {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "N")
+        User user2 = User.of("test@gmail.com", "12345678", "test", "N")
+
+        when:
+        userRepository.save(user)
+        userRepository.save(user2)
+
+        then:
+        DataIntegrityViolationException e = thrown()
     }
 
     def "회원 조회" () {
@@ -103,5 +117,62 @@ class UserRepositoryTest extends Specification {
         then:
         !result
         findUser.getDelYn() == "Y"
+    }
+
+    def "회원을 email로 찾는 경우" () {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "Y")
+        User savedUser = userRepository.save(user)
+
+        when:
+        User findUser = userRepository.findUserByEmail("test@gmail.com").get()
+
+        then:
+        findUser.getUsername() == savedUser.getUsername()
+        findUser.getEmail() == savedUser.getEmail()
+        findUser.getPassword() == savedUser.getPassword()
+        findUser.getUsername() == savedUser.getUsername()
+        findUser.getRole() == savedUser.getRole()
+    }
+
+    def "회원을 email 로 찾을 때 없는 경우" () {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "Y")
+        userRepository.save(user)
+
+        when:
+        userRepository.findUserByEmail("None").get()
+
+        then:
+        NoSuchElementException e = thrown()
+    }
+
+    def "회원이 username 으로 찾는 경우" () {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "Y")
+        User savedUser = userRepository.save(user)
+
+        when:
+        User findUser = userRepository.findUserByUsername("test").get()
+
+        then:
+        findUser.getUsername() == savedUser.getUsername()
+
+        findUser.getEmail() == savedUser.getEmail()
+        findUser.getPassword() == savedUser.getPassword()
+        findUser.getUsername() == savedUser.getUsername()
+        findUser.getRole() == savedUser.getRole()
+    }
+
+    def "회원을 usernaem 으로 찾을 때 없는 경우" () {
+        given:
+        User user = User.of("test@gmail.com", "12345678", "test", "Y")
+        userRepository.save(user)
+
+        when:
+        userRepository.findUserByUsername("None").get()
+
+        then:
+        NoSuchElementException e = thrown()
     }
 }

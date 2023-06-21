@@ -15,7 +15,8 @@ create table users (
 	created_by bigint,
 	modified_at datetime(6),
 	modified_by bigint,
-	primary key (id)
+	primary key (id),
+	unique key (email)
 )
 ;
 
