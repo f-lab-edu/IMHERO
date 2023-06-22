@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     DUPLICATED_USER(HttpStatus.CONFLICT, "User is duplicated"),
-    BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad request"), ;
+    EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "email not found"),
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad request"),
+    ;
 
     private HttpStatus status;
     private String message;

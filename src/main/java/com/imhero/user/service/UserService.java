@@ -3,26 +3,29 @@ package com.imhero.user.service;
 import com.imhero.user.domain.Role;
 import com.imhero.user.domain.User;
 import com.imhero.user.dto.UserDto;
+import com.imhero.user.dto.request.LoginRequest;
 import com.imhero.user.dto.request.UserRequest;
+import com.imhero.user.dto.response.LoginResponse;
 import com.imhero.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @RequiredArgsConstructor
 @Transactional
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public UserDto save(UserRequest userRequest) {
         User user;
         try {
             user = userRepository.save(User.of(
                     userRequest.getEmail(),
-                    userRequest.getPassword(),
+                    bCryptPasswordEncoder.encode(userRequest.getPassword()),
                     userRequest.getUsername(),
                     "N"));
         } catch (DataIntegrityViolationException e) {
@@ -31,6 +34,12 @@ public class UserService {
             throw new IllegalArgumentException("올바르지 않은 요청입니다.");
         }
         return UserDto.from(user);
+    }
+
+    @Transactional(readOnly = true)
+    public LoginResponse login(LoginRequest loginRequest) {
+        User user = getUserByEmailOrElseThrow(loginRequest.getEmail());
+        return LoginResponse.from(user);
     }
 
     @Transactional(readOnly = true)
