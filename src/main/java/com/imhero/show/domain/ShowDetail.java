@@ -1,6 +1,8 @@
 package com.imhero.show.domain;
 
 import com.imhero.config.BaseEntity;
+import com.imhero.config.exception.ErrorCode;
+import com.imhero.config.exception.ImheroApplicationException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,12 +67,11 @@ public class ShowDetail extends BaseEntity {
         return this;
     }
 
-    public boolean cancel() {
+    public void cancel() {
         if (this.delYn.equals("Y")) {
-            return false;
+            throw new ImheroApplicationException(ErrorCode.ALREADY_DELETED);
         }
 
         this.delYn = "Y";
-        return true;
     }
 }
