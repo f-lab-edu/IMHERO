@@ -12,8 +12,8 @@ import javax.persistence.MappedSuperclass;
 public class BaseEntity extends BaseTimeEntity {
 
     @CreatedBy
-    private Long createdBy;
+    private String createdBy;
 
     @LastModifiedBy
-    private Long modifiedBy;
+    private String modifiedBy;
 }
