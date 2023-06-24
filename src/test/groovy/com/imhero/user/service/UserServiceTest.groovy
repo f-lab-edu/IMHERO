@@ -1,5 +1,7 @@
 package com.imhero.user.service
 
+import com.imhero.config.exception.ErrorCode
+import com.imhero.config.exception.ImheroApplicationException
 import com.imhero.user.domain.Role
 import com.imhero.user.domain.User
 import com.imhero.user.dto.UserDto
@@ -13,7 +15,9 @@ import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Shared
+
 import spock.lang.Specification
+
 
 @Transactional
 @SpringBootTest
@@ -61,6 +65,20 @@ class UserServiceTest extends Specification {
         e.getMessage() == "이미 가입된 회원입니다."
     }
 
+    def "회원 가입시 에러가 발생한 경우" () {
+        given:
+        UserRepository userRepository = Mock(UserRepository.class)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
+        UserRequest userRequest = new UserRequest(email, password, username)
+
+        when:
+        userRepository.save(_) >> { throw new Exception("exception") }
+        userService.save(userRequest)
+
+        then:
+        IllegalArgumentException e = thrown()
+    }
+
     def "회원 조회"() {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
@@ -92,6 +110,40 @@ class UserServiceTest extends Specification {
         userRepository.findUserByEmail(_) >> Optional.empty()
         IllegalArgumentException e = thrown()
         e.getMessage() == "회원이 없습니다."
+    }
+
+    def "회원 아이디로 회원 조회"() {
+        given:
+        UserRepository userRepository = Mock(UserRepository.class)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
+        User user = User.of(email, password, username, "N")
+        userRepository.findById(_) >> Optional.of(user)
+
+        when:
+        User findUser = userService.getUserByIdOrElseThrow(1L)
+
+        then:
+        findUser.getEmail() == email
+        findUser.getPassword() == password
+        findUser.getPassword() == passwordCheck
+        findUser.getUsername() == username
+        findUser.getRole() == Role.USER
+        findUser.getDelYn() == "N"
+    }
+
+    def "회원 아이디로 회원 조회시 유저가 없는 경우"() {
+        given:
+        UserRepository userRepository = Mock(UserRepository.class)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
+        User user = User.of(email, password, username, "N")
+        userRepository.findById(_) >> Optional.empty()
+
+        when:
+        User findUser = userService.getUserByIdOrElseThrow(1L)
+
+        then:
+        def e = thrown(ImheroApplicationException)
+        e.errorCode == ErrorCode.USER_NOT_FOUND
     }
 
     def "회원 수정"() {
@@ -187,5 +239,4 @@ class UserServiceTest extends Specification {
         then:
         loginResponse.getId() == user.getId()
     }
-
 }

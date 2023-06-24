@@ -1,5 +1,7 @@
 package com.imhero.user.service;
 
+import com.imhero.config.exception.ErrorCode;
+import com.imhero.config.exception.ImheroApplicationException;
 import com.imhero.user.domain.Role;
 import com.imhero.user.domain.User;
 import com.imhero.user.dto.UserDto;
@@ -8,11 +10,13 @@ import com.imhero.user.dto.request.UserRequest;
 import com.imhero.user.dto.response.LoginResponse;
 import com.imhero.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Service
@@ -67,5 +71,10 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("회원이 없습니다."));
     }
 
+    @Transactional(readOnly = true)
+    public User getUserByIdOrElseThrow(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ImheroApplicationException(ErrorCode.USER_NOT_FOUND));
+    }
 
 }
