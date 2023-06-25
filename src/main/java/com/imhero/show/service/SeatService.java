@@ -8,6 +8,7 @@ import com.imhero.show.dto.request.SeatRequest;
 import com.imhero.show.repository.SeatRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,16 +17,18 @@ public class SeatService {
     private final SeatRepository seatRepository;
     private final ShowDetailService showDetailService;
 
-    Long save(SeatRequest seatRequest) {
+    @Transactional
+    public Long save(SeatRequest seatRequest) {
         return seatRepository.save(
-                    Seat.of(
+                Seat.of(
                         showDetailService.getShowDetailByIdOrElseThrow(seatRequest.getShowDetailId()),
                         Grade.from(seatRequest.getGrade()),
                         seatRequest.getTotalQuantity()
-                    )).getId();
+                )).getId();
     }
 
-    void modify(SeatRequest seatRequest) {
+    @Transactional
+    public void modify(SeatRequest seatRequest) {
         getSeatByIdOrElseThrow(seatRequest.getId())
                 .modify(Grade.from(seatRequest.getGrade()),
                         seatRequest.getTotalQuantity());
@@ -39,7 +42,7 @@ public class SeatService {
         return getSeatByIdOrElseThrow(seatId).cancel(count);
     }
 
-    Seat getSeatByIdOrElseThrow(Long seatId) {
+    public Seat getSeatByIdOrElseThrow(Long seatId) {
         return seatRepository
                 .findById(seatId)
                 .orElseThrow(() -> new ImheroApplicationException(ErrorCode.SEAT_NOT_FOUND));
