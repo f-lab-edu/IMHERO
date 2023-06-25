@@ -22,6 +22,7 @@ public class ShowDetail extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "show_id")
     private Show show;
 
     private Integer sequence;
@@ -32,7 +33,9 @@ public class ShowDetail extends BaseEntity {
     private String delYn;
 
     public static ShowDetail of(Show show, Integer sequence, LocalDateTime showFromDt, LocalDateTime showToDt, LocalDateTime reservationFromDt, LocalDateTime reservationToDt, String delYn) {
-        return new ShowDetail(show, sequence, showFromDt, showToDt, reservationFromDt, reservationToDt, delYn);
+        ShowDetail showDetail = new ShowDetail(show, sequence, showFromDt, showToDt, reservationFromDt, reservationToDt, delYn);
+        show.showDetails.add(showDetail);
+        return showDetail;
     }
 
     private ShowDetail(Show show, Integer sequence, LocalDateTime showFromDt, LocalDateTime showToDt, LocalDateTime reservationFromDt, LocalDateTime reservationToDt, String delYn) {

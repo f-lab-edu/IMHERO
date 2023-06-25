@@ -27,15 +27,20 @@ public class ShowService {
         return showRepository.findAllByDelYn(pageable, delYn).map(ShowResponse::from);
     }
 
+    @Transactional(readOnly = true)
+    public ShowResponse findById(Long showId, String delYn) {
+        return ShowResponse.from(getShowByIdAndDelYn(showId, delYn));
+    }
+
     public Long save(ShowRequest showRequest) {
         return showRepository.save(
-                        Show.of(showRequest.getTitle(),
-                                showRequest.getArtist(),
-                                showRequest.getPlace(),
-                                userService.getUserByIdOrElseThrow(showRequest.getUserId()),
-                                showRequest.getShowFromDate(),
-                                showRequest.getShowToDate(),
-                                "N")).getId();
+                Show.of(showRequest.getTitle(),
+                        showRequest.getArtist(),
+                        showRequest.getPlace(),
+                        userService.getUserByIdOrElseThrow(showRequest.getUserId()),
+                        showRequest.getShowFromDate(),
+                        showRequest.getShowToDate(),
+                        "N")).getId();
     }
 
     public void modify(ShowRequest showRequest) {

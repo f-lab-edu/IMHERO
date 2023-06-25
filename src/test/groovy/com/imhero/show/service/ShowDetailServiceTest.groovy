@@ -24,8 +24,10 @@ class ShowDetailServiceTest extends Specification {
     def "공연 회차 추가"() {
         given:
         ShowDetailRepository showDetailRepository = Mock(ShowDetailRepository.class)
-        ShowDetailService showDetailService = getShowDetailService(showDetailRepository, Mock(ShowService.class))
+        ShowService showService = Mock(ShowService.class)
         ShowDetail showDetail = Mock(ShowDetail.class)
+        ShowDetailService showDetailService = getShowDetailService(showDetailRepository, showService)
+        showService.getShowByIdOrElseThrow(_) >> getShow()
         showDetailRepository.save(_) >> showDetail
         showDetail.getId() >> 1L
 

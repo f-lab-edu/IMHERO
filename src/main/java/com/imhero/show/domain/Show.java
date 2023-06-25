@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,6 +34,9 @@ public class Show extends BaseEntity {
     private LocalDateTime showFromDate;
     private LocalDateTime showToDate;
     private String delYn;
+
+    @OneToMany(mappedBy = "show")
+    List<ShowDetail> showDetails = new ArrayList<>();
 
     private Show(String title, String artist, String place, User user, LocalDateTime showFromDate, LocalDateTime showToDate, String delYn) {
         this.title = title;

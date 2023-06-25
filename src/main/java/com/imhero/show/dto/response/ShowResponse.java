@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
@@ -18,6 +20,7 @@ public class ShowResponse {
     private Long userId;
     private LocalDateTime showFromDate;
     private LocalDateTime showToDate;
+    private List<ShowDetailResponse> showDetailResponses;
 
     public static ShowResponse from(Show show) {
         return new ShowResponse(
@@ -27,7 +30,10 @@ public class ShowResponse {
                 show.getPlace(),
                 show.getUser().getId(),
                 show.getShowFromDate(),
-                show.getShowToDate()
-        );
+                show.getShowToDate(),
+                show.getShowDetails()
+                        .stream()
+                        .map(ShowDetailResponse::from)
+                        .collect(Collectors.toList()));
     }
 }

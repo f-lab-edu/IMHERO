@@ -3,6 +3,7 @@ package com.imhero.show.repository
 import com.imhero.config.exception.ErrorCode
 import com.imhero.config.exception.ImheroApplicationException
 import com.imhero.show.domain.Show
+import com.imhero.show.domain.ShowDetail
 import com.imhero.user.domain.User
 import com.imhero.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,6 +21,7 @@ import java.time.LocalDateTime
 class ShowRepositoryTest extends Specification {
 
     @Autowired private ShowRepository showRepository
+    @Autowired private ShowDetailRepository showDetailRepository
     @Autowired private UserRepository userRepository
     @Autowired private EntityManager em;
 
@@ -36,13 +38,21 @@ class ShowRepositoryTest extends Specification {
 
     def "공연 단건 조회"() {
         given:
+        LocalDateTime now = LocalDateTime.now()
         Show show = Show.of("title", "artist", "place", user, LocalDateTime.now(), LocalDateTime.now(), "N")
+        ShowDetail showDetail1 = ShowDetail.of(show, 1, now, now, now, now, "N")
+        ShowDetail showDetail2 = ShowDetail.of(show, 2, now, now, now, now, "N")
 
         when:
         Show savedShow = showRepository.save(show)
+        showDetailRepository.save(showDetail1)
+        showDetailRepository.save(showDetail2)
+        em.flush()
+        Show findShow = showRepository.findById(savedShow.getId()).get()
 
         then:
-        show == savedShow
+        show == findShow
+        findShow.showDetails.size() == 2
     }
 
     def "공연 전체 조회"() {
