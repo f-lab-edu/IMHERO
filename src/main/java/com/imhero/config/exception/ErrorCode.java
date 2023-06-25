@@ -12,6 +12,10 @@ public enum ErrorCode {
     SHOW_NOT_FOUND(HttpStatus.NOT_FOUND, "show not found"),
     SHOW_DETAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "show detail not found"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "user not found"),
+    INSUFFICIENT_SEAT(HttpStatus.BAD_REQUEST, "Insufficient seat quantity"),
+    EXCEEDED_SEAT_CANCELLATION(HttpStatus.BAD_REQUEST, "Exceeded seat cancellation"),
+    GRADE_NOT_FOUND(HttpStatus.NOT_FOUND, "Grade not found"),
+    SEAT_NOT_FOUND(HttpStatus.NOT_FOUND, "Seat not found"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad request"),
     ALREADY_DELETED(HttpStatus.CONFLICT, "Already deleted")
     ;

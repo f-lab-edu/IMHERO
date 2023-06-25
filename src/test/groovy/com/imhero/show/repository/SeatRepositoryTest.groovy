@@ -1,5 +1,7 @@
 package com.imhero.show.repository
 
+import com.imhero.config.exception.ErrorCode
+import com.imhero.config.exception.ImheroApplicationException
 import com.imhero.show.domain.Grade
 import com.imhero.show.domain.Seat
 import com.imhero.show.domain.ShowDetail
@@ -129,8 +131,8 @@ class SeatRepositoryTest extends Specification {
         seat.reserve(11)
 
         then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "잔여 티켓 수량이 부족합니다."
+        def e = thrown(ImheroApplicationException)
+        e.errorCode == ErrorCode.INSUFFICIENT_SEAT
     }
 
     def "좌석 수량 변경(예매 취소 시 수량 증가)"() {
@@ -158,7 +160,7 @@ class SeatRepositoryTest extends Specification {
         seat.cancel(3)
 
         then:
-        def e = thrown(IllegalArgumentException)
-        e.message == "전체 티켓 수량을 초과하는 티켓은 취소할 수 없습니다."
+        def e = thrown(ImheroApplicationException)
+        e.errorCode == ErrorCode.EXCEEDED_SEAT_CANCELLATION
     }
 }

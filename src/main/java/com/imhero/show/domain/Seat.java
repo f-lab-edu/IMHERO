@@ -1,6 +1,8 @@
 package com.imhero.show.domain;
 
 import com.imhero.config.BaseEntity;
+import com.imhero.config.exception.ErrorCode;
+import com.imhero.config.exception.ImheroApplicationException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,7 +51,7 @@ public class Seat extends BaseEntity {
 
     public int reserve(int count) {
         if (currentQuantity < count) {
-            throw new IllegalArgumentException("잔여 티켓 수량이 부족합니다.");
+            throw new ImheroApplicationException(ErrorCode.INSUFFICIENT_SEAT);
         }
         currentQuantity -= count;
         return count;
@@ -57,7 +59,7 @@ public class Seat extends BaseEntity {
     public int cancel(int count) {
         int total = currentQuantity + count;
         if (total > totalQuantity) {
-            throw new IllegalArgumentException("전체 티켓 수량을 초과하는 티켓은 취소할 수 없습니다.");
+            throw new ImheroApplicationException(ErrorCode.EXCEEDED_SEAT_CANCELLATION);
         }
         currentQuantity = total;
         return count;
