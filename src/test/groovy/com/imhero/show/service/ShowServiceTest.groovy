@@ -46,7 +46,7 @@ class ShowServiceTest extends Specification {
         showRepository.findShowByIdAndDelYn(_, _) >> Optional.of(show)
 
         when:
-        Show findShow = showService.getShowByIdAndDelYn(1L, "N")
+        ShowResponse findShow = showService.findById(1L, "N")
 
         then:
         findShow.getTitle() == show.getTitle()
@@ -65,7 +65,7 @@ class ShowServiceTest extends Specification {
         showRepository.findShowByIdAndDelYn(_, _) >> Optional.empty()
 
         when:
-        Show findShow = showService.getShowByIdAndDelYn(1L, "N")
+        Show findShow = showService.findById(1L, "N")
 
         then:
         def e = thrown(ImheroApplicationException)

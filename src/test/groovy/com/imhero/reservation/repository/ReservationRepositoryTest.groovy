@@ -1,5 +1,7 @@
 package com.imhero.reservation.repository
 
+import com.imhero.config.exception.ErrorCode
+import com.imhero.config.exception.ImheroApplicationException
 import com.imhero.reservation.domain.Reservation
 import com.imhero.show.domain.Grade
 import com.imhero.show.domain.Seat
@@ -82,11 +84,10 @@ class ReservationRepositoryTest extends Specification {
 
         when:
         Reservation savedReservation = reservationRepository.save(reservation)
-        boolean result = savedReservation.cancel()
+        savedReservation.cancel()
         Reservation findReservation = reservationRepository.findById(reservation.getId()).get()
 
         then:
-        result
         findReservation.getDelYn() == "Y"
     }
 
@@ -96,11 +97,11 @@ class ReservationRepositoryTest extends Specification {
 
         when:
         Reservation savedReservation = reservationRepository.save(reservation)
-        boolean result = savedReservation.cancel()
-        Reservation findReservation = reservationRepository.findById(reservation.getId()).get()
+        savedReservation.cancel()
+        reservationRepository.findById(reservation.getId()).get()
 
         then:
-        !result
-        findReservation.getDelYn() == "Y"
+        def e = thrown(ImheroApplicationException)
+        e.errorCode == ErrorCode.ALREADY_DELETED
     }
 }

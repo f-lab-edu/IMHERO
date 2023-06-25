@@ -1,6 +1,5 @@
 package com.imhero.user.domain;
 
-import com.imhero.config.BaseEntity;
 import com.imhero.config.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Getter;
