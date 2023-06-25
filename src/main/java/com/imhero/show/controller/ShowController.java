@@ -24,8 +24,8 @@ public class ShowController {
     }
 
     @GetMapping("/{showId}")
-    public Response<ShowResponse> findById(@PathVariable Long showId, @RequestBody String delYn) {
-        return Response.success(ShowResponse.from(showService.getShowByIdAndDelYn(showId, delYn)));
+    public Response<ShowResponse> findById(@PathVariable Long showId, @RequestParam("del_yn") String delYn) {
+        return Response.success(showService.findById(showId, delYn));
     }
 
     @PostMapping("")
