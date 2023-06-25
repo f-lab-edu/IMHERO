@@ -1,6 +1,8 @@
 package com.imhero.reservation.domain;
 
 import com.imhero.config.BaseTimeEntity;
+import com.imhero.config.exception.ErrorCode;
+import com.imhero.config.exception.ImheroApplicationException;
 import com.imhero.show.domain.Seat;
 import com.imhero.user.domain.User;
 import lombok.AccessLevel;
@@ -36,12 +38,11 @@ public class Reservation extends BaseTimeEntity {
         return new Reservation(user, seat, delYn);
     }
 
-    public boolean cancel() {
+    public void cancel() {
         if (this.delYn.equals("Y")) {
-            return false;
+            throw new ImheroApplicationException(ErrorCode.ALREADY_DELETED);
         }
 
         this.delYn = "Y";
-        return true;
     }
 }
