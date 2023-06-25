@@ -17,8 +17,8 @@ public enum ErrorCode {
     GRADE_NOT_FOUND(HttpStatus.NOT_FOUND, "Grade not found"),
     SEAT_NOT_FOUND(HttpStatus.NOT_FOUND, "Seat not found"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad request"),
-    ALREADY_DELETED(HttpStatus.CONFLICT, "Already deleted")
-    ;
+    ALREADY_DELETED(HttpStatus.CONFLICT, "Already deleted"),
+    UNAUTHORIZED_BEHAVIOR(HttpStatus.UNAUTHORIZED, "Unauthorized behavior");
 
     private HttpStatus status;
     private String message;

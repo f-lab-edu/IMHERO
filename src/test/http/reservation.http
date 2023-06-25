@@ -1,0 +1,23 @@
+### save
+
+POST http://localhost:8080/api/v1/show/reservation
+Content-Type: application/json
+
+{
+  "seatId": 7,
+  "count": 2,
+  "requestTime": "2023-06-24T14:30:00"
+}
+
+### cancel
+DELETE http://localhost:8080/api/v1/show/reservation
+Content-Type: application/json
+
+{
+  "seatId": 7,
+  "ids": [
+    1,
+    2
+  ]
+}
+
