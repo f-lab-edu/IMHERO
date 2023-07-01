@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,12 +45,17 @@ public class ReservationService {
     public void cancel(String userName, ReservationCancelRequest reservationCancelRequest) {
         User user = getUser(userName);
         Seat seat = seatService.getSeatByIdOrElseThrow(reservationCancelRequest.getSeatId());
+
         List<Reservation> reservations = reservationRepository.findAllById(reservationCancelRequest.getIds());
-        log.info("the reservation {}", reservations);
         if (!reservations.get(0).getUser().getEmail().equals(user.getEmail())) {
             throw new ImheroApplicationException(ErrorCode.UNAUTHORIZED_BEHAVIOR);
         }
-        reservations.forEach(Reservation::cancel);
+
+        List<Long> reservationIds = reservations.stream()
+                                                .map(Reservation::getId)
+                                                .collect(Collectors.toList());
+
+        reservationRepository.updateDelYnByIds(reservationIds);
         seat.cancel(reservations.size());
     }
 
