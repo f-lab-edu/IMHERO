@@ -24,17 +24,9 @@ class ReservationRepositoryTest extends Specification {
     @Autowired
     private SeatRepository seatRepository
 
-    Seat seat
-    User user
-
-    def setup() {
-        user = userRepository.save(User.of("test@gmail.com", "password", "test", "N"))
-        seat = seatRepository.save(Seat.of(null, Grade.A, 30))
-    }
-
     def "예약 생성"() {
         given:
-        Reservation reservation = Reservation.of(user, seat, "N")
+        Reservation reservation = Reservation.of(getUser(), seat, "N")
 
         when:
         Reservation savedReservation = reservationRepository.save(reservation)
@@ -45,6 +37,8 @@ class ReservationRepositoryTest extends Specification {
 
     def "예약 단건 조회"() {
         given:
+        User user = getUser()
+        Seat seat = getSeat()
         Reservation reservation = Reservation.of(user, seat, "N")
 
         when:
@@ -67,12 +61,14 @@ class ReservationRepositoryTest extends Specification {
 
     def "예약 전체 조회"() {
         given:
+        User user = getUser()
+        Seat seat = getSeat()
         Reservation reservation1 = Reservation.of(user, seat, "N")
         Reservation reservation2 = Reservation.of(user, seat, "N")
 
         when:
         reservationRepository.saveAll(List.of(reservation1, reservation2))
-        List<Reservation> reservations = reservationRepository.findAllByUserId(getUser().getId())
+        List<Reservation> reservations = reservationRepository.findAllByUserId(user.getId())
 
         then:
         reservations.size() == 2
@@ -80,28 +76,41 @@ class ReservationRepositoryTest extends Specification {
 
     def "예약 취소"() {
         given:
-        Reservation reservation = Reservation.of(user, seat, "N")
+        User user = getUser()
+        Seat seat = getSeat()
+        Reservation reservation1 = Reservation.of(user, seat, "N")
+        Reservation reservation2 = Reservation.of(user, seat, "N")
 
         when:
-        Reservation savedReservation = reservationRepository.save(reservation)
-        savedReservation.cancel()
-        Reservation findReservation = reservationRepository.findById(reservation.getId()).get()
+        Reservation savedReservation1 = reservationRepository.save(reservation1)
+        Reservation savedReservation2 = reservationRepository.save(reservation2)
+        int deletedCount = reservationRepository.updateDelYnByIds(Set.of(savedReservation1.getId(), savedReservation2.getId()))
 
         then:
-        findReservation.getDelYn() == "Y"
+        deletedCount == 2
     }
 
     def "예약이 이미 취소된 경우"() {
         given:
-        Reservation reservation = Reservation.of(getUser(), getSeat(), "Y")
+        User user = getUser()
+        Seat seat = getSeat()
+        Reservation reservation1 = Reservation.of(user, seat, "N")
+        Reservation reservation2 = Reservation.of(user, seat, "Y")
 
         when:
-        Reservation savedReservation = reservationRepository.save(reservation)
-        savedReservation.cancel()
-        reservationRepository.findById(reservation.getId()).get()
+        Reservation savedReservation1 = reservationRepository.save(reservation1)
+        Reservation savedReservation2 = reservationRepository.save(reservation2)
+        int deletedCount = reservationRepository.updateDelYnByIds(Set.of(savedReservation1.getId(), savedReservation2.getId()))
 
         then:
-        def e = thrown(ImheroApplicationException)
-        e.errorCode == ErrorCode.ALREADY_DELETED
+        deletedCount == 1
+    }
+
+    private Seat getSeat() {
+        return seatRepository.save(Seat.of(null, Grade.A, 30))
+    }
+
+    private User getUser() {
+        return userRepository.save(User.of("test@gmail.com", "password", "test", "N"))
     }
 }

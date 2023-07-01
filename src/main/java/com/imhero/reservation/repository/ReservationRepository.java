@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findAllByUserId(Long userId);
@@ -17,6 +18,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Modifying
     @Transactional
-    @Query("UPDATE Reservation r SET r.delYn = 'Y' WHERE r.id IN :ids")
-    void updateDelYnByIds(@Param("ids") List<Long> ids);
+    @Query("UPDATE Reservation r SET r.delYn = 'Y' WHERE r.id IN :ids AND r.delYn = 'N'")
+    int updateDelYnByIds(@Param("ids") Set<Long> ids);
 }

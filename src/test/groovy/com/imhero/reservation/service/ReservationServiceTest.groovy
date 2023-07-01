@@ -4,7 +4,7 @@ import com.imhero.config.exception.ErrorCode
 import com.imhero.config.exception.ImheroApplicationException
 import com.imhero.fixture.Fixture
 import com.imhero.reservation.domain.Reservation
-import com.imhero.reservation.domain.ReservationCancelRequest
+import com.imhero.reservation.dto.ReservationCancelRequest
 import com.imhero.reservation.dto.ReservationRequest
 import com.imhero.reservation.repository.ReservationRepository
 import com.imhero.show.domain.Seat
@@ -54,13 +54,16 @@ class ReservationServiceTest extends Specification {
 
         ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService)
         Reservation reservation = Fixture.getReservation()
-
-        userService.getUserByEmailOrElseThrow(_) >> reservation.getUser()
         Seat seat = Fixture.getSeat()
-        seat.reserve(3)
-        int before = seat.getCurrentQuantity()
+
+        int count = 3
+        int before = seat.totalQuantity - seat.reserve(count)
+
+        reservation.getDelYn()
+        userService.getUserByEmailOrElseThrow(_) >> reservation.getUser()
         seatService.getSeatByIdOrElseThrow(_) >> seat
         reservationRepository.findAllById(_) >> [reservation, Fixture.getReservation(), Fixture.getReservation()]
+        reservationRepository.updateDelYnByIds(_) >> count
 
         when:
         def reservationCancelRequest = getReservationCancelRequest()
@@ -95,7 +98,7 @@ class ReservationServiceTest extends Specification {
     }
 
     private ReservationCancelRequest getReservationCancelRequest() {
-        return new ReservationCancelRequest(1L, List.of(1L, 2L, 3L))
+        return new ReservationCancelRequest(1L, Set.of(1L, 2L, 3L))
     }
 
     private getSeatService() {
