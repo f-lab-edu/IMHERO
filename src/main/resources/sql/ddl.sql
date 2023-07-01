@@ -12,9 +12,9 @@ create table users (
 	role varchar(20),
 	username varchar(50),
 	created_at datetime(6),
-	created_by bigint,
+	created_by varchar(50),
 	modified_at datetime(6),
-	modified_by bigint,
+	modified_by varchar(50),
 	primary key (id),
 	unique key (email)
 )
@@ -30,9 +30,9 @@ create table shows (
 	title varchar(255),
 	user_id bigint,
 	created_at datetime(6),
-	created_by bigint,
+	created_by varchar(50),
 	modified_at datetime(6),
-	modified_by bigint,
+	modified_by varchar(50),
 	primary key (id)
 )
 ;
@@ -47,9 +47,9 @@ create table show_detail (
 	show_to_dt datetime(6),
 	show_id bigint,
 	created_at datetime(6),
-	created_by bigint,
+	created_by varchar(50),
 	modified_at datetime(6),
-	modified_by bigint,
+	modified_by varchar(50),
 	primary key (id)
 )
 ;
@@ -62,9 +62,9 @@ create table seat (
 	total_quantity integer not null,
 	show_detail_id bigint,
 	created_at datetime(6),
-	created_by bigint,
+	created_by varchar(50),
 	modified_at datetime(6),
-	modified_by bigint,
+	modified_by varchar(50),
 	primary key (id)
 )
 ;

@@ -35,13 +35,4 @@ public class Reservation extends BaseTimeEntity {
     public static Reservation of(User user, Seat seat, String delYn) {
         return new Reservation(user, seat, delYn);
     }
-
-    public boolean cancel() {
-        if (this.delYn.equals("Y")) {
-            return false;
-        }
-
-        this.delYn = "Y";
-        return true;
-    }
 }

@@ -1,27 +1,30 @@
 package com.imhero.user.service
 
+import com.imhero.config.exception.ErrorCode
+import com.imhero.config.exception.ImheroApplicationException
 import com.imhero.user.domain.Role
 import com.imhero.user.domain.User
 import com.imhero.user.dto.UserDto
+import com.imhero.user.dto.request.LoginRequest
 import com.imhero.user.dto.request.UserRequest
+import com.imhero.user.dto.response.LoginResponse
 import com.imhero.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Shared
+
 import spock.lang.Specification
 
-import javax.persistence.EntityManager
 
 @Transactional
 @SpringBootTest
 class UserServiceTest extends Specification {
 
-    // spring security
-    // User details Service
-    // authentication check
-    // repository -> user, service -> dto, controller -> response 응답
+    @Autowired BCryptPasswordEncoder bCryptPasswordEncoder
+
     @Shared String email = "email@gamil.com"
     @Shared String password = "password1!!1"
     @Shared String passwordCheck = "password1!!1"
@@ -30,7 +33,7 @@ class UserServiceTest extends Specification {
     def "회원 가입"() {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
         User user = User.of(email, password, username, "N")
         UserRequest userRequest = new UserRequest(email, password,  username)
 
@@ -50,7 +53,7 @@ class UserServiceTest extends Specification {
     def "회원 가입시 이미 가입된 회원인 경우" () {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
         UserRequest userRequest = new UserRequest(email, password, username)
 
         when:
@@ -62,10 +65,24 @@ class UserServiceTest extends Specification {
         e.getMessage() == "이미 가입된 회원입니다."
     }
 
+    def "회원 가입시 에러가 발생한 경우" () {
+        given:
+        UserRepository userRepository = Mock(UserRepository.class)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
+        UserRequest userRequest = new UserRequest(email, password, username)
+
+        when:
+        userRepository.save(_) >> { throw new Exception("exception") }
+        userService.save(userRequest)
+
+        then:
+        IllegalArgumentException e = thrown()
+    }
+
     def "회원 조회"() {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
         User user = User.of(email, password, username, "N")
 
         when:
@@ -84,7 +101,7 @@ class UserServiceTest extends Specification {
     def "회원 조회시 회원이 없는 경우"() {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
 
         when:
         userService.findUserByEmail(email)
@@ -95,10 +112,44 @@ class UserServiceTest extends Specification {
         e.getMessage() == "회원이 없습니다."
     }
 
+    def "회원 아이디로 회원 조회"() {
+        given:
+        UserRepository userRepository = Mock(UserRepository.class)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
+        User user = User.of(email, password, username, "N")
+        userRepository.findById(_) >> Optional.of(user)
+
+        when:
+        User findUser = userService.getUserByIdOrElseThrow(1L)
+
+        then:
+        findUser.getEmail() == email
+        findUser.getPassword() == password
+        findUser.getPassword() == passwordCheck
+        findUser.getUsername() == username
+        findUser.getRole() == Role.USER
+        findUser.getDelYn() == "N"
+    }
+
+    def "회원 아이디로 회원 조회시 유저가 없는 경우"() {
+        given:
+        UserRepository userRepository = Mock(UserRepository.class)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
+        User user = User.of(email, password, username, "N")
+        userRepository.findById(_) >> Optional.empty()
+
+        when:
+        User findUser = userService.getUserByIdOrElseThrow(1L)
+
+        then:
+        def e = thrown(ImheroApplicationException)
+        e.errorCode == ErrorCode.USER_NOT_FOUND
+    }
+
     def "회원 수정"() {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
         User user = User.of(email, password, username, "N")
         UserRequest userRequest = new UserRequest(email, password, username)
 
@@ -117,7 +168,7 @@ class UserServiceTest extends Specification {
     def "회원 수정시 회원이 없는 경우" () {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
         UserRequest userRequest = new UserRequest(email, password, username)
 
         when:
@@ -132,7 +183,7 @@ class UserServiceTest extends Specification {
     def "회원 탈퇴"() {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
         User user = User.of(email, password, username, "N")
 
         when:
@@ -147,7 +198,7 @@ class UserServiceTest extends Specification {
     def "회원 탈퇴시 이미 탈퇴된 회원인 경우" () {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
         User user = User.of(email, password, username, "Y")
 
         when:
@@ -162,7 +213,7 @@ class UserServiceTest extends Specification {
     def "회원 탈퇴시 회원이 없는 경우"() {
         given:
         UserRepository userRepository = Mock(UserRepository.class)
-        UserService userService = new UserService(userRepository)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
         User user = User.of(email, password, username, "N")
 
         when:
@@ -172,5 +223,20 @@ class UserServiceTest extends Specification {
         userRepository.findUserByEmail(_) >> Optional.empty()
         IllegalArgumentException e = thrown()
         e.getMessage() == "회원이 없습니다."
+    }
+
+    def "로그인"() {
+        given:
+        UserRepository userRepository = Mock(UserRepository.class)
+        UserService userService = new UserService(userRepository, bCryptPasswordEncoder)
+        LoginRequest loginRequest = new LoginRequest(email, password)
+        User user = User.of(email, password, username, "N")
+        userRepository.findUserByEmail(_) >> Optional.of(user)
+
+        when:
+        LoginResponse loginResponse = userService.login(loginRequest)
+
+        then:
+        loginResponse.getId() == user.getId()
     }
 }

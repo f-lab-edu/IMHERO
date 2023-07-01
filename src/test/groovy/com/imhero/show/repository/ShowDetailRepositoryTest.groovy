@@ -1,5 +1,7 @@
 package com.imhero.show.repository
 
+import com.imhero.config.exception.ErrorCode
+import com.imhero.config.exception.ImheroApplicationException
 import com.imhero.show.domain.Show
 import com.imhero.show.domain.ShowDetail
 import com.imhero.user.domain.User
@@ -118,12 +120,11 @@ class ShowDetailRepositoryTest extends Specification {
 
         when:
         ShowDetail savedShowDetail = showDetailRepository.save(showDetail)
-        boolean result = savedShowDetail.cancel()
+        savedShowDetail.cancel()
         em.flush()
         ShowDetail findShowDetail = showDetailRepository.findById(showDetail.getId()).get()
 
         then:
-        result
         findShowDetail.getDelYn() == "Y"
     }
 
@@ -133,12 +134,12 @@ class ShowDetailRepositoryTest extends Specification {
 
         when:
         ShowDetail savedShowDetail = showDetailRepository.save(showDetail)
-        boolean result = savedShowDetail.cancel()
+        savedShowDetail.cancel()
         em.flush()
-        ShowDetail findShowDetail = showDetailRepository.findById(showDetail.getId()).get()
+        showDetailRepository.findById(showDetail.getId()).get()
 
         then:
-        !result
-        findShowDetail.getDelYn() == "Y"
+        def e = thrown(ImheroApplicationException.class)
+        e.errorCode == ErrorCode.ALREADY_DELETED
     }
 }
