@@ -1,7 +1,7 @@
 package com.imhero.reservation.controller;
 
 import com.imhero.config.exception.Response;
-import com.imhero.reservation.domain.ReservationCancelRequest;
+import com.imhero.reservation.dto.ReservationCancelRequest;
 import com.imhero.reservation.dto.ReservationRequest;
 import com.imhero.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;

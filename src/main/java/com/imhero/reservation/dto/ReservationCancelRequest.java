@@ -1,16 +1,16 @@
-package com.imhero.reservation.domain;
+package com.imhero.reservation.dto;
 
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationCancelRequest {
     private Long seatId;
-    List<Long> ids = new ArrayList<>();
+    Set<Long> ids = new HashSet<>();
 }
