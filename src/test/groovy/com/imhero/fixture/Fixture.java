@@ -15,6 +15,10 @@ public class Fixture {
         return User.of("test@gmail.com", "12345678", "test", "N");
     }
 
+    public static User getNewUser() {
+        return User.of("newTest@gmail.com", "12345678", "newTest", "N");
+    }
+
     public static Show getShow() {
         return Show.of("title", "artist", "place", getUser(), LocalDateTime.now(), LocalDateTime.now(), "N");
     }

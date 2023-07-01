@@ -79,7 +79,7 @@ class ReservationServiceTest extends Specification {
         ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService)
         Reservation reservation = Fixture.getReservation()
 
-        userService.getUserByEmailOrElseThrow(_) >> Fixture.getUser()
+        userService.getUserByEmailOrElseThrow(_) >> Fixture.getNewUser()
         Seat seat = Fixture.getSeat()
         seat.reserve(3)
         seatService.getSeatByIdOrElseThrow(_) >> seat
