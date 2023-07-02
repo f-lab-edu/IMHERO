@@ -1,6 +1,7 @@
 package com.imhero.reservation.dto.response;
 
 import com.imhero.reservation.dto.ReservationDao;
+import com.imhero.reservation.dto.ReservationSellerDao;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,13 @@ public class ReservationResponse {
     public static ReservationResponse of(String email, List<ReservationDao> reservationDaos) {
         ReservationResponse reservationResponse = new ReservationResponse(email);
         reservationDaos.forEach(reservationResponse::addShowResponse);
+        return reservationResponse;
+    }
+
+    public static ReservationResponse ofSeller(String email, List<ReservationSellerDao> reservationSellerDaos) {
+        ReservationResponse reservationResponse = new ReservationResponse(email);
+        reservationSellerDaos.stream().map(e -> new ReservationDao(e.getUser(), e.getShow(), e.getShowDetail(), e.getSeat(), null))
+                .forEach(reservationResponse::addShowResponse);
         return reservationResponse;
     }
 

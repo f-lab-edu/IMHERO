@@ -48,7 +48,9 @@ public class ReservationShowDetailResponse {
             ReservationSeatResponse seatResponse = ReservationSeatResponse.of(
                     reservationDao.getSeat().getId(),
                     reservationDao.getSeat().getGradeDetails().getGrade(),
-                    reservationDao.getSeat().getGradeDetails().getPrice());
+                    reservationDao.getSeat().getGradeDetails().getPrice(),
+                    reservationDao.getSeat().getCurrentQuantity(),
+                    reservationDao.getSeat().getTotalQuantity());
             seats.add(seatResponse);
 
             seatResponse.addCount();
