@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ReservationResponse {
     private String email;
-    private List<ReservationShowResponse> reservationShowResponses = new ArrayList<>();
+    private List<ReservationShowResponse> shows = new ArrayList<>();
 
     public ReservationResponse(String email) {
         this.email = email;
@@ -25,9 +25,9 @@ public class ReservationResponse {
 
     public void addShowResponse(ReservationDao reservationDao) {
         ReservationShowResponse now = new ReservationShowResponse(reservationDao.getShow().getId());
-        if (reservationShowResponses.contains(now)) {
-            reservationShowResponses
-                    .get(reservationShowResponses.indexOf(now))
+        if (shows.contains(now)) {
+            shows
+                    .get(shows.indexOf(now))
                     .addShowDetailResponse(reservationDao);
         } else {
             ReservationShowResponse showResponse = ReservationShowResponse.of(
@@ -38,7 +38,7 @@ public class ReservationResponse {
                     reservationDao.getShow().getShowFromDate(),
                     reservationDao.getShow().getShowToDate(),
                     reservationDao.getShow().getDelYn());
-            reservationShowResponses.add(showResponse);
+            shows.add(showResponse);
 
             showResponse.addShowDetailResponse(reservationDao);
         }

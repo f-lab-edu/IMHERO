@@ -152,10 +152,10 @@ class ReservationServiceTest extends Specification {
         ReservationResponse reservationResponse = reservationService.findAllReservationByEmail("test")
 
         then:
-        reservationResponse.reservationShowResponses.size() == 1
-        reservationResponse.reservationShowResponses.get(0).reservationShowDetailResponses.size() == 1
-        reservationResponse.reservationShowResponses.get(0).reservationShowDetailResponses.get(0).reservationSeatResponses.size() == 1
-        reservationResponse.reservationShowResponses.get(0).reservationShowDetailResponses.get(0).reservationSeatResponses.get(0).count == 2
+        reservationResponse.shows.size() == 1
+        reservationResponse.shows.get(0).showDetails.size() == 1
+        reservationResponse.shows.get(0).showDetails.get(0).seats.size() == 1
+        reservationResponse.shows.get(0).showDetails.get(0).seats.get(0).count == 2
     }
 
     private ReservationCancelRequest getReservationCancelRequest() {

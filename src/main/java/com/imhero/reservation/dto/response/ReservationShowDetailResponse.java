@@ -18,7 +18,7 @@ public class ReservationShowDetailResponse {
     private LocalDateTime reservationFromDt;
     private LocalDateTime reservationToDt;
     private String delYn;
-    private List<ReservationSeatResponse> reservationSeatResponses = new ArrayList<>();
+    private List<ReservationSeatResponse> seats = new ArrayList<>();
 
     public ReservationShowDetailResponse(Long showDetailId, Integer sequence, LocalDateTime showFromDt, LocalDateTime showToDt, LocalDateTime reservationFromDt, LocalDateTime reservationToDt, String delYn) {
         this.showDetailId = showDetailId;
@@ -40,16 +40,16 @@ public class ReservationShowDetailResponse {
 
     public void addSeatResponse(ReservationDao reservationDao) {
         ReservationSeatResponse now = new ReservationSeatResponse(reservationDao.getSeat().getId());
-        if (reservationSeatResponses.contains(now)) {
-            reservationSeatResponses
-                    .get(reservationSeatResponses.indexOf(now))
+        if (seats.contains(now)) {
+            seats
+                    .get(seats.indexOf(now))
                     .addCount();
         } else {
             ReservationSeatResponse seatResponse = ReservationSeatResponse.of(
                     reservationDao.getSeat().getId(),
                     reservationDao.getSeat().getGradeDetails().getGrade(),
                     reservationDao.getSeat().getGradeDetails().getPrice());
-            reservationSeatResponses.add(seatResponse);
+            seats.add(seatResponse);
 
             seatResponse.addCount();
         }
