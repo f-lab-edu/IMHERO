@@ -5,6 +5,7 @@ import com.imhero.config.exception.ImheroApplicationException
 import com.imhero.fixture.Fixture
 import com.imhero.reservation.domain.Reservation
 import com.imhero.reservation.dto.ReservationDao
+import com.imhero.reservation.dto.ReservationSellerDao
 import com.imhero.reservation.dto.request.ReservationCancelRequest
 import com.imhero.reservation.dto.request.ReservationRequest
 import com.imhero.reservation.dto.response.ReservationResponse
@@ -156,6 +157,40 @@ class ReservationServiceTest extends Specification {
         reservationResponse.shows.get(0).showDetails.size() == 1
         reservationResponse.shows.get(0).showDetails.get(0).seats.size() == 1
         reservationResponse.shows.get(0).showDetails.get(0).seats.get(0).count == 2
+    }
+
+    def "판매자 이메일로 모든 seat 조회"() {
+        given:
+        UserService userService = getUserService()
+        SeatService seatService = getSeatService()
+        ReservationRepository reservationRepository = getReservationRepository()
+
+        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService)
+
+        when:
+        User user = Fixture.getUser()
+        Show show = Fixture.getShow(user)
+        ShowDetail showDetail = Fixture.getShowDetail(show)
+        Seat seat = Fixture.getSeat(showDetail)
+
+        Seat seat2 = Seat.of(showDetail, Grade.VIP, 100)
+
+        userRepository.save(user)
+        showRepository.save(show)
+        showDetailRepository.save(showDetail)
+        seatRepository.save(seat)
+
+        seatRepository.save(seat2)
+
+        ReservationSellerDao reservationDao = new ReservationSellerDao(show, showDetail, user, seat)
+        ReservationSellerDao reservationDao2 = new ReservationSellerDao(show, showDetail, user, seat2)
+        reservationRepository.findAllSeatByEmail(_) >> List.of(reservationDao, reservationDao2)
+        ReservationResponse reservationResponse = reservationService.findAllSeatByEmail("test")
+
+        then:
+        reservationResponse.shows.size() == 1
+        reservationResponse.shows.get(0).showDetails.size() == 1
+        reservationResponse.shows.get(0).showDetails.get(0).seats.size() == 2
     }
 
     private ReservationCancelRequest getReservationCancelRequest() {
