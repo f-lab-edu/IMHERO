@@ -1,4 +1,4 @@
-package com.imhero.reservation.dto;
+package com.imhero.reservation.dto.request;
 
 import lombok.Data;
 import lombok.AllArgsConstructor;

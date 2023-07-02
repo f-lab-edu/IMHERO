@@ -19,20 +19,20 @@ public class Fixture {
         return User.of("newTest@gmail.com", "12345678", "newTest", "N");
     }
 
-    public static Show getShow() {
-        return Show.of("title", "artist", "place", getUser(), LocalDateTime.now(), LocalDateTime.now(), "N");
+    public static Show getShow(User user) {
+        return Show.of("title", "artist", "place", user, LocalDateTime.now(), LocalDateTime.now(), "N");
     }
 
-    public static ShowDetail getShowDetail() {
+    public static ShowDetail getShowDetail(Show show) {
         LocalDateTime now = LocalDateTime.now();
-        return ShowDetail.of(getShow(), 1, now, now, now, now, "N");
+        return ShowDetail.of(show, 1, now, now, now, now, "N");
     }
 
-    public static Seat getSeat() {
-        return Seat.of(getShowDetail(), Grade.A, 30);
+    public static Seat getSeat(ShowDetail showDetail) {
+        return Seat.of(showDetail, Grade.A, 30);
     }
 
-    public static Reservation getReservation() {
-        return Reservation.of(getUser(), getSeat(), "N");
+    public static Reservation getReservation(User user, Seat seat) {
+        return Reservation.of(user, seat, "N");
     }
 }
