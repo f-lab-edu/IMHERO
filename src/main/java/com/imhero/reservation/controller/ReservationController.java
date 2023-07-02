@@ -19,6 +19,11 @@ import java.util.Set;
 public class ReservationController {
     private final ReservationService reservationService;
 
+    @GetMapping("/seller")
+    public Response<ReservationResponse> findAllSeatByEmail(HttpSession session) {
+        return Response.success(reservationService.findAllSeatByEmail(getUserName(session)));
+    }
+
     @GetMapping("")
     public Response<ReservationResponse> findAllReservationByEmail(HttpSession session) {
         return Response.success(reservationService.findAllReservationByEmail(getUserName(session)));

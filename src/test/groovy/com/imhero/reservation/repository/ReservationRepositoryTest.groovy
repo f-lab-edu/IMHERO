@@ -4,6 +4,7 @@ package com.imhero.reservation.repository
 import com.imhero.fixture.Fixture
 import com.imhero.reservation.domain.Reservation
 import com.imhero.reservation.dto.ReservationDao
+import com.imhero.reservation.dto.ReservationSellerDao
 import com.imhero.show.domain.Grade
 import com.imhero.show.domain.Seat
 import com.imhero.show.domain.Show
@@ -148,6 +149,34 @@ class ReservationRepositoryTest extends Specification {
         then:
         reservations.size() == 2
     }
+
+    def "판매자 계정으로 모든 예약 조회"() {
+        given:
+        User user = Fixture.getUser()
+        Show show = Fixture.getShow(user)
+        ShowDetail showDetail = Fixture.getShowDetail(show)
+        Seat seat = Fixture.getSeat(showDetail)
+        userRepository.save(user)
+        showRepository.save(show)
+        showDetailRepository.save(showDetail)
+        seatRepository.save(seat)
+
+
+        Show show2 = Show.of("title2", "artist2", "place2", user, LocalDateTime.now(), LocalDateTime.now(), "N")
+        ShowDetail showDetail2 = Fixture.getShowDetail(show2)
+        Seat seat2 = Fixture.getSeat(showDetail2)
+
+        showRepository.save(show2)
+        showDetailRepository.save(showDetail2)
+        seatRepository.save(seat2)
+
+        when:
+        List<ReservationSellerDao> reservations = reservationRepository.findAllSeatByEmail(user.getEmail())
+
+        then:
+        reservations.size() == 2
+    }
+
 
     private Seat getSeat() {
         return seatRepository.save(Seat.of(null, Grade.A, 30))

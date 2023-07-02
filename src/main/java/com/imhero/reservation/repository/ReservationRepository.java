@@ -32,4 +32,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             " JOIN r.seat.showDetail.show" +
             " where r.user.email = :email")
     List<ReservationDao> findAllReservationByEmail(@Param("email") String email);
+
+    @Query("SELECT" +
+            " new com.imhero.reservation.dto.ReservationSellerDao(s.showDetail.show, s.showDetail, s.showDetail.show.user, s)" +
+            " FROM Seat s" +
+            " JOIN s.showDetail" +
+            " JOIN s.showDetail.show" +
+            " JOIN s.showDetail.show.user" +
+            " where s.showDetail.show.user.email = :email")
+    List<ReservationSellerDao> findAllSeatByEmail(@Param("email") String email);
 }

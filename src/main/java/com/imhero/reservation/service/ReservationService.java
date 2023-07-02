@@ -30,6 +30,12 @@ public class ReservationService {
     private final SeatService seatService;
 
     @Transactional(readOnly = true)
+    public ReservationResponse findAllSeatByEmail(String email) {
+        return ReservationResponse
+                .ofSeller(email, reservationRepository.findAllSeatByEmail(email));
+    }
+
+    @Transactional(readOnly = true)
     public ReservationResponse findAllReservationByEmail(String email) {
         return ReservationResponse
                 .of(email, reservationRepository.findAllReservationByEmail(email));
