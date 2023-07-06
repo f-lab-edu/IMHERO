@@ -22,6 +22,20 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new ImheroApplicationException(ErrorCode.EMAIL_NOT_FOUND));
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
+        return new CustomUserDetails(user);
+    }
+
+    public class CustomUserDetails extends org.springframework.security.core.userdetails.User {
+
+        private User user;
+
+        private CustomUserDetails(User user) {
+            super(user.getEmail(), user.getPassword(), new ArrayList<>());
+            this.user = user;
+        }
+
+        public User getUser() {
+            return user;
+        }
     }
 }
