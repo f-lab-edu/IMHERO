@@ -3,8 +3,8 @@ package com.imhero.reservation.repository
 
 import com.imhero.fixture.Fixture
 import com.imhero.reservation.domain.Reservation
-import com.imhero.reservation.dto.ReservationDao
-import com.imhero.reservation.dto.ReservationSellerDao
+import com.imhero.reservation.dto.ReservationDto
+import com.imhero.reservation.dto.ReservationSellerDto
 import com.imhero.show.domain.Grade
 import com.imhero.show.domain.Seat
 import com.imhero.show.domain.Show
@@ -144,7 +144,7 @@ class ReservationRepositoryTest extends Specification {
         reservationRepository.save(reservation2)
 
         when:
-        List<ReservationDao> reservations = reservationRepository.findAllReservationByEmail(user.getEmail())
+        List<ReservationDto> reservations = reservationRepository.findAllReservationByEmail(user.getEmail())
 
         then:
         reservations.size() == 2
@@ -171,7 +171,7 @@ class ReservationRepositoryTest extends Specification {
         seatRepository.save(seat2)
 
         when:
-        List<ReservationSellerDao> reservations = reservationRepository.findAllSeatByEmail(user.getEmail())
+        List<ReservationSellerDto> reservations = reservationRepository.findAllSeatByEmail(user.getEmail())
 
         then:
         reservations.size() == 2

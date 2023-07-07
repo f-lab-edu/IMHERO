@@ -4,11 +4,12 @@ import com.imhero.config.exception.ErrorCode
 import com.imhero.config.exception.ImheroApplicationException
 import com.imhero.fixture.Fixture
 import com.imhero.reservation.domain.Reservation
-import com.imhero.reservation.dto.ReservationDao
-import com.imhero.reservation.dto.ReservationSellerDao
+import com.imhero.reservation.dto.ReservationDto
+import com.imhero.reservation.dto.ReservationSellerDto
 import com.imhero.reservation.dto.request.ReservationCancelRequest
 import com.imhero.reservation.dto.request.ReservationRequest
 import com.imhero.reservation.dto.response.ReservationResponse
+import com.imhero.reservation.dto.response.ReservationSellerResponse
 import com.imhero.reservation.repository.ReservationRepository
 import com.imhero.show.domain.Grade
 import com.imhero.show.domain.Seat
@@ -60,7 +61,7 @@ class ReservationServiceTest extends Specification {
         Reservation reservation2 = Mock(Reservation.class)
         reservation2.getId() >> 2L
 
-        (reservationRepository.save(_)) >>> [reservation1, reservation2]
+        reservationRepository.saveAll(_) >> List.of(reservation1, reservation2)
 
         when:
         def ids = reservationService.save("test@gmail.com", reservationRequest)
@@ -147,16 +148,14 @@ class ReservationServiceTest extends Specification {
         seatRepository.save(seat2)
         reservationRepository.save(reservation2)
 
-        ReservationDao reservationDao = new ReservationDao(user, show, showDetail, seat, reservation)
-        ReservationDao reservationDao2 = new ReservationDao(user, show, showDetail, seat, reservation)
-        reservationRepository.findAllReservationByEmail(_) >> List.of(reservationDao, reservationDao2)
+        ReservationDto reservationDto = Fixture.getReservationDto(6L)
+        ReservationDto reservationDto2 = Fixture.getReservationDto(7L)
+
+        reservationRepository.findAllReservationByEmail(_) >> List.of(reservationDto, reservationDto2)
         ReservationResponse reservationResponse = reservationService.findAllReservationByEmail("test")
 
         then:
-        reservationResponse.shows.size() == 1
-        reservationResponse.shows.get(0).showDetails.size() == 1
-        reservationResponse.shows.get(0).showDetails.get(0).seats.size() == 1
-        reservationResponse.shows.get(0).showDetails.get(0).seats.get(0).count == 2
+        reservationResponse.shows.size() == 2
     }
 
     def "판매자 이메일로 모든 seat 조회"() {
@@ -182,15 +181,13 @@ class ReservationServiceTest extends Specification {
 
         seatRepository.save(seat2)
 
-        ReservationSellerDao reservationDao = new ReservationSellerDao(show, showDetail, user, seat)
-        ReservationSellerDao reservationDao2 = new ReservationSellerDao(show, showDetail, user, seat2)
-        reservationRepository.findAllSeatByEmail(_) >> List.of(reservationDao, reservationDao2)
-        ReservationResponse reservationResponse = reservationService.findAllSeatByEmail("test")
+        ReservationSellerDto reservationDto = Fixture.getReservationSellerDto()
+        ReservationSellerDto reservationDto2 = Fixture.getReservationSellerDto()
+        reservationRepository.findAllSeatByEmail(_) >> List.of(reservationDto, reservationDto2)
+        List<ReservationSellerResponse> sellers = reservationService.findAllSeatByEmail("test")
 
         then:
-        reservationResponse.shows.size() == 1
-        reservationResponse.shows.get(0).showDetails.size() == 1
-        reservationResponse.shows.get(0).showDetails.get(0).seats.size() == 2
+        sellers.size() == 2
     }
 
     private ReservationCancelRequest getReservationCancelRequest() {

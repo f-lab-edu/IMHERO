@@ -1,6 +1,8 @@
 package com.imhero.fixture;
 
 import com.imhero.reservation.domain.Reservation;
+import com.imhero.reservation.dto.ReservationDto;
+import com.imhero.reservation.dto.ReservationSellerDto;
 import com.imhero.show.domain.Grade;
 import com.imhero.show.domain.Seat;
 import com.imhero.show.domain.Show;
@@ -34,5 +36,62 @@ public class Fixture {
 
     public static Reservation getReservation(User user, Seat seat) {
         return Reservation.of(user, seat, "N");
+    }
+
+    public static ReservationDto getReservationDto(long reservationSeatId) {
+        LocalDateTime now = LocalDateTime.now();
+        return new ReservationDto(
+                1L,
+                "email@gmail.com",
+                "username",
+                2L,
+                "artist",
+                "place",
+                "title",
+                "regi",
+                now,
+                now,
+                "N",
+                3L,
+                now,
+                now,
+                3,
+                "N",
+                4L,
+                "VIP",
+                20000,
+                100,
+                100,
+                5L,
+                "N",
+                reservationSeatId
+        );
+    }
+
+    public static ReservationSellerDto getReservationSellerDto() {
+        LocalDateTime now = LocalDateTime.now();
+        return new ReservationSellerDto(
+                1L,
+                "email@gmail.com",
+                "username",
+                2L,
+                "artist",
+                "place",
+                "title",
+                "regi",
+                now,
+                now,
+                "N",
+                3L,
+                now,
+                now,
+                3,
+                "N",
+                4L,
+                "VIP",
+                20000,
+                100,
+                100
+        );
     }
 }
