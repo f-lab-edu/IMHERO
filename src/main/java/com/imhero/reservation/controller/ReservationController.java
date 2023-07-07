@@ -4,6 +4,7 @@ import com.imhero.config.exception.Response;
 import com.imhero.reservation.dto.request.ReservationCancelRequest;
 import com.imhero.reservation.dto.request.ReservationRequest;
 import com.imhero.reservation.dto.response.ReservationResponse;
+import com.imhero.reservation.dto.response.ReservationSellerResponse;
 import com.imhero.reservation.service.ReservationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContext;
@@ -11,6 +12,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @GetMapping("/seller")
-    public Response<ReservationResponse> findAllSeatByEmail(HttpSession session) {
+    public Response<List<ReservationSellerResponse>> findAllSeatByEmail(HttpSession session) {
         return Response.success(reservationService.findAllSeatByEmail(getUserName(session)));
     }
 
