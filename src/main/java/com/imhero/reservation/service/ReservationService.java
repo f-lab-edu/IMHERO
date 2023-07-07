@@ -6,6 +6,7 @@ import com.imhero.reservation.domain.Reservation;
 import com.imhero.reservation.dto.request.ReservationCancelRequest;
 import com.imhero.reservation.dto.request.ReservationRequest;
 import com.imhero.reservation.dto.response.ReservationResponse;
+import com.imhero.reservation.dto.response.ReservationSellerResponse;
 import com.imhero.reservation.repository.ReservationRepository;
 import com.imhero.show.domain.Seat;
 import com.imhero.show.service.SeatService;
@@ -30,9 +31,10 @@ public class ReservationService {
     private final SeatService seatService;
 
     @Transactional(readOnly = true)
-    public ReservationResponse findAllSeatByEmail(String email) {
-        return ReservationResponse
-                .ofSeller(email, reservationRepository.findAllSeatByEmail(email));
+    public List<ReservationSellerResponse> findAllSeatByEmail(String email) {
+        return reservationRepository.findAllSeatByEmail(email)
+                .stream().map(ReservationSellerResponse::of)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -46,13 +48,17 @@ public class ReservationService {
         User user = getUser(userName);
         Seat seat = seatService.getSeatByIdOrElseThrow(reservationRequest.getSeatId());
 
-        Set<Long> reservationIds = IntStream.range(0, reservationRequest.getCount())
-                .mapToLong((i) -> reservationRepository.save(Reservation.of(user, seat, "N")).getId())
+        List<Reservation> reservations = reservationRepository.saveAll(
+                IntStream.range(0, reservationRequest.getCount())
+                        .mapToObj((i) -> Reservation.of(user, seat, "N"))
+                        .collect(Collectors.toList())
+        );
+
+        seat.reserve(reservations.size());
+        return reservations.stream()
+                .mapToLong(Reservation::getId)
                 .boxed()
                 .collect(Collectors.toSet());
-
-        seat.reserve(reservationIds.size());
-        return reservationIds;
     }
 
     @Transactional
