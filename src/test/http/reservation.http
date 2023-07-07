@@ -21,3 +21,10 @@ Content-Type: application/json
   ]
 }
 
+### 예매 조회
+GET http://localhost:8080/api/v1/show/reservation
+Content-Type: application/json
+
+### 판매형환 조회
+GET http://localhost:8080/api/v1/show/reservation/seller
+Content-Type: application/json
