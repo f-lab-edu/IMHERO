@@ -50,6 +50,18 @@ class SeatRepositoryTest extends Specification {
         savedSeat == findSeat
     }
 
+    def "좌석 단건 조회 - x lock"() {
+        given:
+        Seat seat = Seat.of(showDetail, Grade.A, 10)
+
+        when:
+        Seat savedSeat = seatRepository.save(seat)
+        Seat findSeat = seatRepository.findBySeatWithPessimisticLock(seat.getId()).get()
+
+        then:
+        savedSeat == findSeat
+    }
+
     def "좌석 전체 조회"() {
         given:
         Seat seat1 = Seat.of(showDetail, Grade.A, 10)

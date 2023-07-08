@@ -28,6 +28,9 @@ import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
 import java.time.LocalDateTime
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 @Transactional
 @SpringBootTest
@@ -52,7 +55,7 @@ class ReservationServiceTest extends Specification {
         ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService)
 
         userService.getUserByEmailOrElseThrow(_) >> Fixture.getUser()
-        seatService.getSeatByIdOrElseThrow(_) >> Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))
+        seatService.getSeatWithPessimisticLockOrElseThrow(_) >> Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))
 
         ReservationRequest reservationRequest = getReservationRequest()
 
@@ -85,7 +88,7 @@ class ReservationServiceTest extends Specification {
 
         reservation.getDelYn()
         userService.getUserByEmailOrElseThrow(_) >> reservation.getUser()
-        seatService.getSeatByIdOrElseThrow(_) >> seat
+        seatService.getSeatWithPessimisticLockOrElseThrow(_) >> seat
         reservationRepository.findAllById(_) >> [reservation, Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))), Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser()))))]
         reservationRepository.updateDelYnByIds(_) >> count
 

@@ -47,4 +47,10 @@ public class SeatService {
                 .findById(seatId)
                 .orElseThrow(() -> new ImheroApplicationException(ErrorCode.SEAT_NOT_FOUND));
     }
+
+    public Seat getSeatWithPessimisticLockOrElseThrow(Long seatId) {
+        return seatRepository
+                .findBySeatWithPessimisticLock(seatId)
+                .orElseThrow(() -> new ImheroApplicationException(ErrorCode.SEAT_NOT_FOUND));
+    }
 }
