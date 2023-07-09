@@ -6,12 +6,10 @@ import com.imhero.reservation.dto.request.ReservationRequest;
 import com.imhero.reservation.dto.response.ReservationResponse;
 import com.imhero.reservation.dto.response.ReservationSellerResponse;
 import com.imhero.reservation.service.ReservationService;
+import com.imhero.user.components.AuthenticatedUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Set;
 
@@ -20,31 +18,26 @@ import java.util.Set;
 @RestController
 public class ReservationController {
     private final ReservationService reservationService;
+    private final AuthenticatedUser authenticatedUser;
 
     @GetMapping("/seller")
-    public Response<List<ReservationSellerResponse>> findAllSeatByEmail(HttpSession session) {
-        return Response.success(reservationService.findAllSeatByEmail(getUserName(session)));
+    public Response<List<ReservationSellerResponse>> findAllSeatByEmail() {
+        return Response.success(reservationService.findAllSeatByEmail(authenticatedUser.getUser().getEmail()));
     }
 
     @GetMapping("")
-    public Response<ReservationResponse> findAllReservationByEmail(HttpSession session) {
-        return Response.success(reservationService.findAllReservationByEmail(getUserName(session)));
+    public Response<ReservationResponse> findAllReservationByEmail() {
+        return Response.success(reservationService.findAllReservationByEmail(authenticatedUser.getUser().getEmail()));
     }
 
     @PostMapping("")
-    public Response<Set<Long>> save(@RequestBody ReservationRequest reservationRequest, HttpSession session) {
-        return Response.success(reservationService.save(getUserName(session), reservationRequest));
+    public Response<Set<Long>> save(@RequestBody ReservationRequest reservationRequest) {
+        return Response.success(reservationService.save(reservationRequest));
     }
 
     @DeleteMapping("")
-    public Response<Void> cancel(@RequestBody ReservationCancelRequest reservationCancelRequest, HttpSession session) {
-
-        reservationService.cancel(getUserName(session), reservationCancelRequest);
+    public Response<Void> cancel(@RequestBody ReservationCancelRequest reservationCancelRequest) {
+        reservationService.cancel(reservationCancelRequest);
         return Response.success();
-    }
-
-    private String getUserName(HttpSession session) {
-        SecurityContext context = (SecurityContext) session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-        return context.getAuthentication().getName();
     }
 }

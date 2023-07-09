@@ -10,6 +10,7 @@ import com.imhero.reservation.dto.response.ReservationSellerResponse;
 import com.imhero.reservation.repository.ReservationRepository;
 import com.imhero.show.domain.Seat;
 import com.imhero.show.service.SeatService;
+import com.imhero.user.components.AuthenticatedUser;
 import com.imhero.user.domain.User;
 import com.imhero.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserService userService;
     private final SeatService seatService;
+    private final AuthenticatedUser authenticatedUser;
 
     @Transactional(readOnly = true)
     public List<ReservationSellerResponse> findAllSeatByEmail(String email) {
@@ -44,8 +46,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public Set<Long> save(String userName, ReservationRequest reservationRequest) {
-        User user = getUser(userName);
+    public Set<Long> save(ReservationRequest reservationRequest) {
+        User user = getUser(authenticatedUser.getUser().getId());
         Seat seat = seatService.getSeatWithPessimisticLockOrElseThrow(reservationRequest.getSeatId());
 
         List<Reservation> reservations = reservationRepository.saveAll(
@@ -62,8 +64,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public void cancel(String userName, ReservationCancelRequest reservationCancelRequest) {
-        User user = getUser(userName);
+    public void cancel(ReservationCancelRequest reservationCancelRequest) {
+        User user = getUser(authenticatedUser.getUser().getId());
         Seat seat = seatService.getSeatWithPessimisticLockOrElseThrow(reservationCancelRequest.getSeatId());
 
         List<Reservation> reservations = reservationRepository.findAllById(reservationCancelRequest.getIds());
@@ -79,7 +81,7 @@ public class ReservationService {
         seat.cancel(deleteCount);
     }
 
-    private User getUser(String userName) {
-        return userService.getUserByEmailOrElseThrow(userName);
+    private User getUser(Long userId) {
+        return userService.getUserByIdOrElseThrow(userId);
     }
 }
