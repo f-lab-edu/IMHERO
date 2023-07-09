@@ -19,6 +19,7 @@ import com.imhero.show.repository.SeatRepository
 import com.imhero.show.repository.ShowDetailRepository
 import com.imhero.show.repository.ShowRepository
 import com.imhero.show.service.SeatService
+import com.imhero.user.components.AuthenticatedUser
 import com.imhero.user.domain.User
 import com.imhero.user.repository.UserRepository
 import com.imhero.user.service.UserService
@@ -28,9 +29,6 @@ import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
 import java.time.LocalDateTime
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 @Transactional
 @SpringBootTest
@@ -52,9 +50,12 @@ class ReservationServiceTest extends Specification {
         UserService userService = getUserService()
         SeatService seatService = getSeatService()
         ReservationRepository reservationRepository = getReservationRepository()
-        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService)
+        AuthenticatedUser authenticatedUser = getAuthenticatedUser()
+        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService, authenticatedUser)
 
-        userService.getUserByEmailOrElseThrow(_) >> Fixture.getUser()
+        User user = Fixture.getUser()
+        userService.getUserByIdOrElseThrow(_) >> user
+        authenticatedUser.getUser() >> user
         seatService.getSeatWithPessimisticLockOrElseThrow(_) >> Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))
 
         ReservationRequest reservationRequest = getReservationRequest()
@@ -67,7 +68,7 @@ class ReservationServiceTest extends Specification {
         reservationRepository.saveAll(_) >> List.of(reservation1, reservation2)
 
         when:
-        def ids = reservationService.save("test@gmail.com", reservationRequest)
+        def ids = reservationService.save(reservationRequest)
 
         then:
         ids.size() == 2
@@ -78,8 +79,9 @@ class ReservationServiceTest extends Specification {
         UserService userService = getUserService()
         SeatService seatService = getSeatService()
         ReservationRepository reservationRepository = getReservationRepository()
+        AuthenticatedUser authenticatedUser = getAuthenticatedUser()
 
-        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService)
+        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService, authenticatedUser)
         Reservation reservation = Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser()))))
         Seat seat = Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))
 
@@ -87,14 +89,15 @@ class ReservationServiceTest extends Specification {
         int before = seat.totalQuantity - seat.reserve(count)
 
         reservation.getDelYn()
-        userService.getUserByEmailOrElseThrow(_) >> reservation.getUser()
+        userService.getUserByIdOrElseThrow(_) >> reservation.getUser()
         seatService.getSeatWithPessimisticLockOrElseThrow(_) >> seat
         reservationRepository.findAllById(_) >> [reservation, Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))), Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser()))))]
         reservationRepository.updateDelYnByIds(_) >> count
+        authenticatedUser.getUser() >> reservation.getUser()
 
         when:
         def reservationCancelRequest = getReservationCancelRequest()
-        reservationService.cancel("test", reservationCancelRequest)
+        reservationService.cancel(reservationCancelRequest)
 
         then:
         seat.getCurrentQuantity() == before + reservationCancelRequest.getIds().size()
@@ -105,19 +108,21 @@ class ReservationServiceTest extends Specification {
         UserService userService = getUserService()
         SeatService seatService = getSeatService()
         ReservationRepository reservationRepository = getReservationRepository()
+        AuthenticatedUser authenticatedUser = getAuthenticatedUser()
 
-        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService)
+        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService, authenticatedUser)
         Reservation reservation = Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser()))))
 
-        userService.getUserByEmailOrElseThrow(_) >> Fixture.getNewUser()
+        userService.getUserByIdOrElseThrow(_) >> Fixture.getNewUser()
         Seat seat = Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))
         seat.reserve(3)
         seatService.getSeatByIdOrElseThrow(_) >> seat
+        authenticatedUser.getUser() >> Fixture.getUser()
         reservationRepository.findAllById(_) >> [reservation, Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))), Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser()))))]
 
         when:
         def reservationCancelRequest = getReservationCancelRequest()
-        reservationService.cancel("test", reservationCancelRequest)
+        reservationService.cancel(reservationCancelRequest)
 
         then:
         def e = thrown(ImheroApplicationException)
@@ -129,8 +134,9 @@ class ReservationServiceTest extends Specification {
         UserService userService = getUserService()
         SeatService seatService = getSeatService()
         ReservationRepository reservationRepository = getReservationRepository()
+        AuthenticatedUser authenticatedUser = getAuthenticatedUser()
 
-        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService)
+        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService, authenticatedUser)
 
         when:
         User user = Fixture.getUser()
@@ -166,8 +172,9 @@ class ReservationServiceTest extends Specification {
         UserService userService = getUserService()
         SeatService seatService = getSeatService()
         ReservationRepository reservationRepository = getReservationRepository()
+        AuthenticatedUser authenticatedUser = getAuthenticatedUser()
 
-        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService)
+        ReservationService reservationService = new ReservationService(reservationRepository, userService, seatService, authenticatedUser)
 
         when:
         User user = Fixture.getUser()
@@ -212,5 +219,9 @@ class ReservationServiceTest extends Specification {
     private getReservationRequest() {
         def given = LocalDateTime.now()
         return new ReservationRequest(1L, 2, given)
+    }
+
+    private getAuthenticatedUser() {
+        return Mock(AuthenticatedUser.class)
     }
 }

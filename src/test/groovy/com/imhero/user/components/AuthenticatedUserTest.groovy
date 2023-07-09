@@ -1,4 +1,4 @@
-package com.imhero.user.utils
+package com.imhero.user.components
 
 import com.imhero.config.exception.ErrorCode
 import com.imhero.config.exception.ImheroApplicationException
@@ -19,7 +19,7 @@ import spock.lang.Specification
 
 @SpringBootTest
 @Transactional
-class UserUtilsTest extends Specification {
+class AuthenticatedUserTest extends Specification {
 
     @Autowired AuthenticationManager authenticationManager
     @Autowired UserService userService
@@ -35,9 +35,11 @@ class UserUtilsTest extends Specification {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication)
 
+        AuthenticatedUser authUser = new AuthenticatedUser()
+
         when:
         User findUser = userRepository.findById(userDto.getId()).get()
-        User authenticatedUser = UserUtils.getAuthenticatedUser()
+        User authenticatedUser = authUser.getUser()
 
         then:
         authenticatedUser == findUser
@@ -46,9 +48,10 @@ class UserUtilsTest extends Specification {
     def "비로그인 유저 정보 조회 시 예외 처리"() {
         given:
         SecurityContextHolder.getContext().setAuthentication(null)
+        AuthenticatedUser authUser = new AuthenticatedUser()
 
         when:
-        UserUtils.getAuthenticatedUser()
+        authUser.getUser()
 
         then:
         def e = thrown(ImheroApplicationException.class)
