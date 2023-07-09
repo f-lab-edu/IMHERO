@@ -44,6 +44,35 @@ class SeatServiceTest extends Specification {
         e.errorCode == ErrorCode.SEAT_NOT_FOUND
     }
 
+    def "좌석 단건 조회 - x lock"() {
+        given:
+        SeatRepository seatRepository = Mock(SeatRepository.class)
+        SeatService seatService = getSeatService(seatRepository, Mock(ShowDetailService.class))
+        Seat seat = getSeat()
+        seatRepository.findBySeatWithPessimisticLock(_) >> Optional.of(seat)
+
+        when:
+        Seat findSeat = seatService.getSeatWithPessimisticLockOrElseThrow(seat.getId())
+
+        then:
+        findSeat == seat
+    }
+
+    def "좌석 단건 조회 시 좌석 미존재 - x lock"() {
+        given:
+        SeatRepository seatRepository = Mock(SeatRepository.class)
+        SeatService seatService = getSeatService(seatRepository, Mock(ShowDetailService.class))
+        Seat seat = getSeat()
+        seatRepository.findBySeatWithPessimisticLock(_) >> Optional.empty()
+
+        when:
+        seatService.getSeatWithPessimisticLockOrElseThrow(seat.getId())
+
+        then:
+        def e = thrown(ImheroApplicationException)
+        e.errorCode == ErrorCode.SEAT_NOT_FOUND
+    }
+
     def "좌석 생성"() {
         given:
         SeatRepository seatRepository = Mock(SeatRepository.class)

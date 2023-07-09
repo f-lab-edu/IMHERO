@@ -46,15 +46,15 @@ public class ReservationService {
     @Transactional
     public Set<Long> save(String userName, ReservationRequest reservationRequest) {
         User user = getUser(userName);
-        Seat seat = seatService.getSeatByIdOrElseThrow(reservationRequest.getSeatId());
+        Seat seat = seatService.getSeatWithPessimisticLockOrElseThrow(reservationRequest.getSeatId());
 
         List<Reservation> reservations = reservationRepository.saveAll(
                 IntStream.range(0, reservationRequest.getCount())
                         .mapToObj((i) -> Reservation.of(user, seat, "N"))
                         .collect(Collectors.toList())
         );
-
         seat.reserve(reservations.size());
+
         return reservations.stream()
                 .mapToLong(Reservation::getId)
                 .boxed()
@@ -64,7 +64,7 @@ public class ReservationService {
     @Transactional
     public void cancel(String userName, ReservationCancelRequest reservationCancelRequest) {
         User user = getUser(userName);
-        Seat seat = seatService.getSeatByIdOrElseThrow(reservationCancelRequest.getSeatId());
+        Seat seat = seatService.getSeatWithPessimisticLockOrElseThrow(reservationCancelRequest.getSeatId());
 
         List<Reservation> reservations = reservationRepository.findAllById(reservationCancelRequest.getIds());
         if (!reservations.get(0).getUser().getEmail().equals(user.getEmail())) {
