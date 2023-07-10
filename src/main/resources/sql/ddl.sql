@@ -33,7 +33,8 @@ create table shows (
 	created_by varchar(50),
 	modified_at datetime(6),
 	modified_by varchar(50),
-	primary key (id)
+	primary key (id),
+	index (user_id)
 )
 ;
 
@@ -50,7 +51,8 @@ create table show_detail (
 	created_by varchar(50),
 	modified_at datetime(6),
 	modified_by varchar(50),
-	primary key (id)
+	primary key (id),
+	index (show_id)
 )
 ;
 
@@ -65,7 +67,8 @@ create table seat (
 	created_by varchar(50),
 	modified_at datetime(6),
 	modified_by varchar(50),
-	primary key (id)
+	primary key (id),
+	index (show_detail_id)
 )
 ;
 
@@ -76,6 +79,7 @@ create table reservation (
 	seat_id bigint,
     created_at datetime(6),
     modified_at datetime(6),
-	primary key (id)
+	primary key (id),
+	index (user_id)
 )
 ;
