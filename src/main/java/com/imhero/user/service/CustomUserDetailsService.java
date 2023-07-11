@@ -25,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
 
-    public class CustomUserDetails extends org.springframework.security.core.userdetails.User {
+    public static class CustomUserDetails extends org.springframework.security.core.userdetails.User {
 
         private User user;
 
