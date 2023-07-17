@@ -1,11 +1,12 @@
 logging:
   level:
-    com.example.board: debug
-    org.springframework.web.servlet: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    root: info
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX}){faint} %clr(%5p) %clr(${PID: }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%X{uuid}){yellow} %clr(%X{userId}){yellow} %clr(%-40.40logger){cyan} %clr(:){faint} %msg%n"
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/imhero
+#    url: jdbc:mysql://mysql:3306/imhero  # for docker run
     username: tkang
     password: 12345678
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,3 +19,16 @@ spring:
       hibernate.show_sql: true
       hibernate.default_batch_fetch_size: 100
   sql.init.mode: always
+---
+spring:
+  config:
+    activate:
+      on-profile:
+        - dev
+  datasource:
+    url: jdbc:mysql://mysql:3306/imhero
+    username: root
+    password:
+  jpa:
+    properties:
+      hibernate.format_sql: false
