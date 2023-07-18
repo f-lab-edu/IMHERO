@@ -3,7 +3,7 @@ package com.imhero.user.components;
 import com.imhero.config.exception.ErrorCode;
 import com.imhero.config.exception.ImheroApplicationException;
 import com.imhero.user.domain.User;
-import com.imhero.user.service.CustomUserDetailsService.CustomUserDetails;
+import com.imhero.user.dto.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
