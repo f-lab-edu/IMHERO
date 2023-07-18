@@ -23,6 +23,7 @@ import com.imhero.user.components.AuthenticatedUser
 import com.imhero.user.domain.User
 import com.imhero.user.repository.UserRepository
 import com.imhero.user.service.UserService
+import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.transaction.annotation.Transactional
@@ -56,7 +57,7 @@ class ReservationServiceTest extends Specification {
         User user = Fixture.getUser()
         userService.getUserByIdOrElseThrow(_) >> user
         authenticatedUser.getUser() >> user
-        seatService.getSeatWithPessimisticLockOrElseThrow(_) >> Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))
+        seatService.getSeatByIdOrElseThrow(_) >> Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))
 
         ReservationRequest reservationRequest = getReservationRequest()
 
@@ -90,7 +91,7 @@ class ReservationServiceTest extends Specification {
 
         reservation.getDelYn()
         userService.getUserByIdOrElseThrow(_) >> reservation.getUser()
-        seatService.getSeatWithPessimisticLockOrElseThrow(_) >> seat
+        seatService.getSeatByIdOrElseThrow(_) >> seat
         reservationRepository.findAllById(_) >> [reservation, Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser())))), Fixture.getReservation(Fixture.getUser(), Fixture.getSeat(Fixture.getShowDetail(Fixture.getShow(Fixture.getUser()))))]
         reservationRepository.updateDelYnByIds(_) >> count
         authenticatedUser.getUser() >> reservation.getUser()
