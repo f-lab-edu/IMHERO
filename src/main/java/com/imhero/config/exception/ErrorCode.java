@@ -18,7 +18,8 @@ public enum ErrorCode {
     SEAT_NOT_FOUND(HttpStatus.NOT_FOUND, "Seat not found"),
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Bad request"),
     ALREADY_DELETED(HttpStatus.CONFLICT, "Already deleted"),
-    UNAUTHORIZED_BEHAVIOR(HttpStatus.UNAUTHORIZED, "Unauthorized behavior");
+    UNAUTHORIZED_BEHAVIOR(HttpStatus.UNAUTHORIZED, "Unauthorized behavior"),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
 
     private HttpStatus status;
     private String message;
