@@ -1,5 +1,6 @@
 package com.imhero.reservation.service;
 
+import com.imhero.config.aop.DistributedLock;
 import com.imhero.config.exception.ErrorCode;
 import com.imhero.config.exception.ImheroApplicationException;
 import com.imhero.reservation.domain.Reservation;
@@ -45,17 +46,16 @@ public class ReservationService {
                 .of(email, reservationRepository.findAllReservationByEmail(email));
     }
 
-    @Transactional
+    @DistributedLock
     public Set<Long> save(ReservationRequest reservationRequest) {
         User user = getUser(authenticatedUser.getUser().getId());
-        Seat seat = seatService.getSeatWithPessimisticLockOrElseThrow(reservationRequest.getSeatId());
+        Seat seat = seatService.getSeatByIdOrElseThrow(reservationRequest.getSeatId());
+        seat.reserve(reservationRequest.getCount());
 
         List<Reservation> reservations = reservationRepository.saveAll(
                 IntStream.range(0, reservationRequest.getCount())
                         .mapToObj((i) -> Reservation.of(user, seat, "N"))
-                        .collect(Collectors.toList())
-        );
-        seat.reserve(reservations.size());
+                        .collect(Collectors.toList()));
 
         return reservations.stream()
                 .mapToLong(Reservation::getId)
@@ -63,10 +63,10 @@ public class ReservationService {
                 .collect(Collectors.toSet());
     }
 
-    @Transactional
+    @DistributedLock
     public void cancel(ReservationCancelRequest reservationCancelRequest) {
         User user = getUser(authenticatedUser.getUser().getId());
-        Seat seat = seatService.getSeatWithPessimisticLockOrElseThrow(reservationCancelRequest.getSeatId());
+        Seat seat = seatService.getSeatByIdOrElseThrow(reservationCancelRequest.getSeatId());
 
         List<Reservation> reservations = reservationRepository.findAllById(reservationCancelRequest.getIds());
         if (!reservations.get(0).getUser().getEmail().equals(user.getEmail())) {

@@ -18,6 +18,11 @@ spring:
       hibernate.format_sql: true
       hibernate.show_sql: true
       hibernate.default_batch_fetch_size: 100
+  session:
+    store-type: redis
+  redis:
+    host: localhost
+    port: 6379
   sql.init.mode: always
 ---
 spring:
@@ -32,3 +37,4 @@ spring:
   jpa:
     properties:
       hibernate.format_sql: false
+      
