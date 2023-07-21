@@ -1,5 +1,6 @@
 package com.imhero.config.filters;
 
+import com.imhero.user.dto.CustomUserDetails;
 import org.slf4j.MDC;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -7,8 +8,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.*;
 import java.io.IOException;
 import java.util.UUID;
-
-import static com.imhero.user.service.CustomUserDetailsService.*;
 
 @Component
 public class MdcFilter implements Filter {
