@@ -38,6 +38,24 @@ class ShowServiceTest extends Specification {
         findShowList.getContent().get(0).title == show.getTitle()
     }
 
+    def "공연 조회 - fulltext"() {
+        given:
+        ShowRepository showRepository = Mock(ShowRepository.class)
+        ShowService showService = getShowService(showRepository, Mock(UserService.class))
+        Show show = getShow()
+        List<Show> showList = Arrays.asList(show, show, show, show, show, show);
+        Page<Show> showPage = new PageImpl<>(showList, PageRequest.of(0, 1), showList.size());
+        showRepository.findAllByFullTextSearch(_, _) >> showPage
+
+        when:
+        Page<ShowResponse> findShowList = showService.findAllByFullTextSearch(PageRequest.of(0, 1), "test")
+
+        then:
+        findShowList.size() == 6
+        findShowList.totalPages == 6
+        findShowList.getContent().get(0).title == show.getTitle()
+    }
+
     def "공연 조회 개별"() {
         given:
         ShowRepository showRepository = Mock(ShowRepository.class)

@@ -28,6 +28,11 @@ public class ShowService {
     }
 
     @Transactional(readOnly = true)
+    public Page<ShowResponse> findAllByFullTextSearch(Pageable pageable, String keyword) {
+        return showRepository.findAllByFullTextSearch(pageable, keyword).map(ShowResponse::from);
+    }
+
+    @Transactional(readOnly = true)
     public ShowResponse findById(Long showId, String delYn) {
         return ShowResponse.from(getShowByIdAndDelYn(showId, delYn));
     }

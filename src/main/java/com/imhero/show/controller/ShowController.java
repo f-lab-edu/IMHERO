@@ -23,6 +23,11 @@ public class ShowController {
         return Response.success(showService.findAll(pageable, delYn));
     }
 
+    @GetMapping("/search")
+    public Response<Page<ShowResponse>> findAllByFullTextSearch(Pageable pageable, @RequestParam("keyword") String keyword) {
+        return Response.success(showService.findAllByFullTextSearch(pageable, keyword));
+    }
+
     @GetMapping("/{showId}")
     public Response<ShowResponse> findById(@PathVariable Long showId, @RequestParam("del_yn") String delYn) {
         return Response.success(showService.findById(showId, delYn));
