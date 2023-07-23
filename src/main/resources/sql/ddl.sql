@@ -35,7 +35,7 @@ create table shows (
 	modified_by varchar(50),
 	primary key (id),
 	index (user_id),
-    fulltext (title, artist, place)
+    fulltext (title, artist, place) with parser ngram
 )
 ;
 
