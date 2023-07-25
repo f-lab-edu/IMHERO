@@ -16,11 +16,13 @@ import com.imhero.user.domain.User
 import com.imhero.user.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
 import java.time.LocalDateTime
 
+@ActiveProfiles(profiles = "test")
 @Transactional
 @SpringBootTest
 class ReservationRepositoryTest extends Specification {

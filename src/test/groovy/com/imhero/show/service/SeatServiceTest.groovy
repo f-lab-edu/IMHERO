@@ -8,9 +8,11 @@ import com.imhero.show.domain.ShowDetail
 import com.imhero.show.dto.request.SeatRequest
 import com.imhero.show.repository.SeatRepository
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
+@ActiveProfiles(profiles = "test")
 @SpringBootTest
 @Transactional
 class SeatServiceTest extends Specification {

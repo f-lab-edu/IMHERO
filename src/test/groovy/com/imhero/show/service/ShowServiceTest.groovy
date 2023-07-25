@@ -12,10 +12,12 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import spock.lang.Specification
 
+@ActiveProfiles(profiles = "test")
 @Transactional
 @SpringBootTest
 class ShowServiceTest extends Specification {

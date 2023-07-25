@@ -13,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Shared
 
 import spock.lang.Specification
 
-
+@ActiveProfiles(profiles = "test")
 @Transactional
 @SpringBootTest
 class UserServiceTest extends Specification {
