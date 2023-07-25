@@ -17,7 +17,9 @@ public interface ShowRepository extends JpaRepository<Show, Long> {
             " FROM shows" +
             " WHERE MATCH(title, artist, place)" +
             " AGAINST(?1 IN NATURAL LANGUAGE MODE)" +
+            " AND show_from_date BETWEEN ?2 and ?3" +
+            " OR show_to_date BETWEEN ?2 and ?3" +
             " ORDER BY ID DESC",
             nativeQuery = true)
-    Page<Show> findAllByFullTextSearch(Pageable pageable, String keyword);
+    Page<Show> findAllByFullTextSearch(Pageable pageable, String keyword, String fromDate, String toDate);
 }

@@ -45,10 +45,10 @@ class ShowServiceTest extends Specification {
         Show show = getShow()
         List<Show> showList = Arrays.asList(show, show, show, show, show, show);
         Page<Show> showPage = new PageImpl<>(showList, PageRequest.of(0, 1), showList.size());
-        showRepository.findAllByFullTextSearch(_, _) >> showPage
+        showRepository.findAllByFullTextSearch(_, _, _, _) >> showPage
 
         when:
-        Page<ShowResponse> findShowList = showService.findAllByFullTextSearch(PageRequest.of(0, 1), "test")
+        Page<ShowResponse> findShowList = showService.findAllByFullTextSearch(PageRequest.of(0, 1), "test", "", "")
 
         then:
         findShowList.size() == 6
