@@ -18,3 +18,7 @@ Content-Type: application/json
 ### find
 GET http://localhost:8080/api/v1/show/1?del_yn=N
 Content-Type: application/json
+
+### findAllByFullTextSearch
+GET http://localhost:8080/api/v1/show/search?keyword=mo&page=0&size=10&fromDate=&toDate=
+Content-Type: application/json

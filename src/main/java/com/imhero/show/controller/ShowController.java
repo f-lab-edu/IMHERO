@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/show")
@@ -21,6 +23,16 @@ public class ShowController {
     @GetMapping("")
     public Response<Page<ShowResponse>> findAll(Pageable pageable, @RequestParam("del_yn") String delYn) {
         return Response.success(showService.findAll(pageable, delYn));
+    }
+
+    @GetMapping("/search")
+    public Response<Page<ShowResponse>> findAllByFullTextSearch(
+            Pageable pageable,
+            @RequestParam("keyword") String keyword,
+            @RequestParam("fromDate") String fromDate,
+            @RequestParam("toDate") String toDate
+    ) {
+        return Response.success(showService.findAllByFullTextSearch(pageable, keyword, fromDate, toDate));
     }
 
     @GetMapping("/{showId}")

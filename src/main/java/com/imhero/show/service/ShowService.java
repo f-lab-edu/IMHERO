@@ -14,17 +14,34 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
 @Service
 public class ShowService {
+    private static final String DEFAULT_FROM_DATE = "1990-01-01";
     private final ShowRepository showRepository;
     private final UserService userService;
 
     @Transactional(readOnly = true)
     public Page<ShowResponse> findAll(Pageable pageable, String delYn) {
         return showRepository.findAllByDelYn(pageable, delYn).map(ShowResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ShowResponse> findAllByFullTextSearch(Pageable pageable, String keyword, String fromDate, String toDate) {
+        if (fromDate.isEmpty()) {
+            fromDate = DEFAULT_FROM_DATE;
+        }
+        if (toDate.isEmpty()) {
+            toDate = LocalDate.now().plusYears(10).toString();
+        }
+        fromDate = fromDate + " 00:00:00";
+        toDate = toDate + " 23:59:59";
+
+        return showRepository.findAllByFullTextSearch(pageable, keyword, fromDate, toDate).map(ShowResponse::from);
     }
 
     @Transactional(readOnly = true)
