@@ -8,12 +8,14 @@ import com.imhero.show.dto.request.ShowDetailRequest
 import com.imhero.show.repository.ShowDetailRepository
 import com.imhero.user.domain.User
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.LocalDateTime
 
+@ActiveProfiles(profiles = "test")
 @SpringBootTest
 @Transactional
 class ShowDetailServiceTest extends Specification {
