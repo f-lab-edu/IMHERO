@@ -35,6 +35,7 @@ create table shows (
 	modified_by varchar(50),
 	primary key (id),
 	index (user_id),
+	index (show_from_date, show_to_date),
     fulltext (title, artist, place) with parser ngram
 )
 ;
@@ -53,7 +54,8 @@ create table show_detail (
 	modified_at datetime(6),
 	modified_by varchar(50),
 	primary key (id),
-	index (show_id)
+	index (show_id),
+	index (reservation_from_dt, reservation_to_dt)
 )
 ;
 
@@ -81,6 +83,7 @@ create table reservation (
     created_at datetime(6),
     modified_at datetime(6),
 	primary key (id),
-	index (user_id)
+	index (user_id),
+	index (created_at)
 )
 ;
